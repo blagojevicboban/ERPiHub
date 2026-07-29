@@ -50,7 +50,8 @@ jobs:
               "--mainExe", "ErpHub.exe",
               "--outputDir", "ReleasePackage",
               "--packTitle", "ErpHub",
-              "--packAuthors", "Blagojevic Boban"
+              "--packAuthors", "Blagojevic Boban",
+              "--icon", "app.ico"
           )
 
           & vpk $vpkArgs

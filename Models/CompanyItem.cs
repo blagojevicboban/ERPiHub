@@ -3,6 +3,7 @@ namespace ErpHub.Models;
 public class CompanyItem
 {
     public int Id { get; set; }
+    public string Sifra { get; set; } = string.Empty;
     public required string Naziv { get; set; }
     public string Pib { get; set; } = string.Empty;
     public string MaticniBroj { get; set; } = string.Empty;

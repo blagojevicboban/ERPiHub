@@ -9,14 +9,19 @@
     <Product>ErpHub</Product>
     <Authors>Blagojević Boban</Authors>
     <Company>Blagojević Boban</Company>
+    <ApplicationIcon>app.ico</ApplicationIcon>
 
     <!-- Čitamo verziju direktno iz version.txt -->
     <Version>$([System.IO.File]::ReadAllText('$(MSBuildProjectDirectory)\version.txt').Trim())</Version>
   </PropertyGroup>
 
   <ItemGroup>
+    <Resource Include="app.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="8.0.0" />
     <PackageReference Include="Velopack" Version="1.2.0" />
   </ItemGroup>
 
 </Project>
-

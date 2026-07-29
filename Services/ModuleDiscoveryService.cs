@@ -103,10 +103,31 @@ public class ModuleDiscoveryService
             module.Status = ModuleStatus.NotInstalled;
             module.ExePath = string.Empty;
             module.InstalledVersion = "-";
+            module.HasVelopackInstall = false;
+            module.UpdateExePath = string.Empty;
             return;
         }
 
         module.ExePath = foundPath;
+
+        // Prava Velopack instalacija ima oblik <RootAppDir>\current\<App>.exe i <RootAppDir>\Update.exe
+        // pored sebe — samo tada ErpHub može da pokrene ažuriranje direktno (vidi UpdateService).
+        var currentDir = Path.GetDirectoryName(foundPath);
+        var rootAppDir = string.Equals(Path.GetFileName(currentDir), "current", StringComparison.OrdinalIgnoreCase)
+            ? Path.GetDirectoryName(currentDir)
+            : null;
+        var updateExePath = rootAppDir != null ? Path.Combine(rootAppDir, "Update.exe") : string.Empty;
+
+        if (!string.IsNullOrEmpty(updateExePath) && File.Exists(updateExePath))
+        {
+            module.HasVelopackInstall = true;
+            module.UpdateExePath = updateExePath;
+        }
+        else
+        {
+            module.HasVelopackInstall = false;
+            module.UpdateExePath = string.Empty;
+        }
 
         try
         {

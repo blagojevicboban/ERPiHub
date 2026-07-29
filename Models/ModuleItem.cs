@@ -32,6 +32,13 @@ public class ModuleItem : INotifyPropertyChanged
     private string _companyCountText = "📁 0 baza firmi";
     private string _bazeFolderPath = string.Empty;
     private CompanyItem? _selectedCompany;
+    private bool _hasVelopackInstall;
+    private string _updateExePath = string.Empty;
+    private string _updateDownloadUrl = string.Empty;
+    private bool _isUpdating;
+    private int _updateProgressPercent;
+    private bool _updateIsIndeterminate;
+    private string _updateProgressLabel = string.Empty;
 
     public required string Id { get; set; }
     public required string Title { get; set; }
@@ -64,14 +71,67 @@ public class ModuleItem : INotifyPropertyChanged
     public string AvailableVersion
     {
         get => _availableVersion;
-        set { if (_availableVersion != value) { _availableVersion = value; OnPropertyChanged(); OnPropertyChanged(nameof(UpdateStatusText)); } }
+        set { if (_availableVersion != value) { _availableVersion = value; OnPropertyChanged(); OnPropertyChanged(nameof(UpdateStatusText)); OnPropertyChanged(nameof(UpdateButtonText)); } }
     }
 
     public UpdateCheckState UpdateState
     {
         get => _updateState;
-        set { if (_updateState != value) { _updateState = value; OnPropertyChanged(); OnPropertyChanged(nameof(UpdateStatusText)); } }
+        set { if (_updateState != value) { _updateState = value; OnPropertyChanged(); OnPropertyChanged(nameof(UpdateStatusText)); OnPropertyChanged(nameof(CanUpdateFromHub)); OnPropertyChanged(nameof(ShowUpdateArea)); } }
     }
+
+    // Postavlja ModuleDiscoveryService kada pronađeni exe leži u pravoj Velopack "current\" instalaciji
+    // (ima Update.exe u root folderu instalacije) — samo tada je moguće ažuriranje direktno iz huba.
+    public bool HasVelopackInstall
+    {
+        get => _hasVelopackInstall;
+        set { if (_hasVelopackInstall != value) { _hasVelopackInstall = value; OnPropertyChanged(); OnPropertyChanged(nameof(CanUpdateFromHub)); OnPropertyChanged(nameof(ShowUpdateArea)); } }
+    }
+
+    public string UpdateExePath
+    {
+        get => _updateExePath;
+        set { if (_updateExePath != value) { _updateExePath = value; OnPropertyChanged(); } }
+    }
+
+    public string UpdateDownloadUrl
+    {
+        get => _updateDownloadUrl;
+        set { if (_updateDownloadUrl != value) { _updateDownloadUrl = value; OnPropertyChanged(); } }
+    }
+
+    public bool IsUpdating
+    {
+        get => _isUpdating;
+        set { if (_isUpdating != value) { _isUpdating = value; OnPropertyChanged(); OnPropertyChanged(nameof(CanUpdateFromHub)); OnPropertyChanged(nameof(ShowUpdateArea)); OnPropertyChanged(nameof(UpdateButtonText)); } }
+    }
+
+    public int UpdateProgressPercent
+    {
+        get => _updateProgressPercent;
+        set { if (_updateProgressPercent != value) { _updateProgressPercent = value; OnPropertyChanged(); } }
+    }
+
+    public bool UpdateIsIndeterminate
+    {
+        get => _updateIsIndeterminate;
+        set { if (_updateIsIndeterminate != value) { _updateIsIndeterminate = value; OnPropertyChanged(); } }
+    }
+
+    public string UpdateProgressLabel
+    {
+        get => _updateProgressLabel;
+        set { if (_updateProgressLabel != value) { _updateProgressLabel = value; OnPropertyChanged(); } }
+    }
+
+    public string UpdateButtonText => IsUpdating
+        ? "⏳ Ažuriranje u toku..."
+        : $"⬆ Ažuriraj na v{AvailableVersion}";
+
+    // Dugme/traka ostaju vidljivi (samo onemogućeni) tokom ažuriranja umesto da nestanu čim
+    // CanUpdateFromHub postane false — inače bi progress bar nestao usred ažuriranja.
+    public bool ShowUpdateArea => HasVelopackInstall
+        && (UpdateState == UpdateCheckState.UpdateAvailable || IsUpdating);
 
     public ModuleStatus Status
     {
@@ -84,6 +144,7 @@ public class ModuleItem : INotifyPropertyChanged
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(StatusText));
                 OnPropertyChanged(nameof(CanLaunch));
+                OnPropertyChanged(nameof(CanUpdateFromHub));
             }
         }
     }
@@ -128,6 +189,11 @@ public class ModuleItem : INotifyPropertyChanged
     };
 
     public bool CanLaunch => Status == ModuleStatus.Installed || Status == ModuleStatus.Running;
+
+    public bool CanUpdateFromHub => HasVelopackInstall
+        && UpdateState == UpdateCheckState.UpdateAvailable
+        && Status != ModuleStatus.Running
+        && !IsUpdating;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

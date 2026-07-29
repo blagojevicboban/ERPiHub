@@ -13,6 +13,7 @@ public partial class MainWindow : Window
     private readonly ModuleDiscoveryService _discoveryService;
     private readonly ModuleLauncherService _launcherService;
     private readonly UpdateCheckService _updateCheckService;
+    private readonly ModuleUpdateService _moduleUpdateService;
     private readonly DispatcherTimer _statusTimer;
 
     public ObservableCollection<ModuleItem> Modules { get; } = new();
@@ -24,6 +25,7 @@ public partial class MainWindow : Window
         _discoveryService = new ModuleDiscoveryService();
         _launcherService = new ModuleLauncherService();
         _updateCheckService = new UpdateCheckService();
+        _moduleUpdateService = new ModuleUpdateService();
 
         LoadData();
         _ = CheckModuleUpdatesAsync();
@@ -131,6 +133,53 @@ public partial class MainWindow : Window
             {
                 TxtStatus.Text = $"Greška pri pokretanju modula '{module.Title}'.";
             }
+        }
+    }
+
+    private async void BtnUpdateModule_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button btn || btn.Tag is not ModuleItem module) return;
+
+        var confirm = MessageBox.Show(
+            $"Preuzeti i primeniti ažuriranje za '{module.Title}' na verziju v{module.AvailableVersion}?\n\nModul mora biti zatvoren tokom ažuriranja.",
+            "Potvrda ažuriranja",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (confirm != MessageBoxResult.Yes) return;
+
+        module.IsUpdating = true;
+        module.UpdateProgressPercent = 0;
+        module.UpdateIsIndeterminate = false;
+        module.UpdateProgressLabel = string.Empty;
+        try
+        {
+            var result = await _moduleUpdateService.ApplyUpdateAsync(module, progress =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    TxtStatus.Text = progress.Label;
+                    module.UpdateProgressLabel = progress.Label;
+                    module.UpdateProgressPercent = progress.Percent;
+                    module.UpdateIsIndeterminate = progress.Indeterminate;
+                });
+            });
+
+            if (result.Success)
+            {
+                TxtStatus.Text = result.Message;
+                _discoveryService.RefreshModuleStatus(module);
+                await _updateCheckService.RefreshUpdateStatusAsync(module);
+            }
+            else
+            {
+                TxtStatus.Text = result.Message;
+                MessageBox.Show(result.Message, "Ažuriranje nije uspelo", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        finally
+        {
+            module.IsUpdating = false;
         }
     }
 

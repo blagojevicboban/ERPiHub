@@ -71,6 +71,7 @@ public class UpdateCheckService
             }
 
             module.AvailableVersion = latestVersionText;
+            module.UpdateDownloadUrl = FindFullPackageUrl(doc.RootElement);
             module.UpdateState = latestVersion > installedVersion
                 ? UpdateCheckState.UpdateAvailable
                 : UpdateCheckState.UpToDate;
@@ -80,6 +81,25 @@ public class UpdateCheckService
             System.Diagnostics.Debug.WriteLine($"Provera ažurnosti nije uspela za modul {module.Id}: {ex.Message}");
             module.UpdateState = UpdateCheckState.CheckFailed;
         }
+    }
+
+    // Traži ...-full.nupkg asset (Velopack pun paket, ne delta) da bi Update.exe apply mogao da ga primeni
+    // bez postojećeg lokalnog baznog paketa.
+    private static string FindFullPackageUrl(JsonElement release)
+    {
+        if (!release.TryGetProperty("assets", out var assets) || assets.ValueKind != JsonValueKind.Array)
+            return string.Empty;
+
+        foreach (var asset in assets.EnumerateArray())
+        {
+            var name = asset.TryGetProperty("name", out var nameProp) ? nameProp.GetString() : null;
+            if (name != null && name.EndsWith("-full.nupkg", StringComparison.OrdinalIgnoreCase))
+            {
+                return asset.TryGetProperty("browser_download_url", out var urlProp) ? urlProp.GetString() ?? string.Empty : string.Empty;
+            }
+        }
+
+        return string.Empty;
     }
 
     // System.Version tretira izostavljene delove kao -1 (npr. "1.0" < "1.0.0.0"), pa se

@@ -217,7 +217,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 <TextBlock x:Name="TxtStatus" Text="ERP Hub spreman za rad." Foreground="#94A3B8" FontSize="12"/>
-                <TextBlock Grid.Column="1" Text="Velopack Integration Enabled • v1.0.0" Foreground="#64748B" FontSize="12"/>
+                <TextBlock Grid.Column="1" x:Name="TxtVersionInfo" Text="Velopack Auto-Update Active • v1.0.0" Foreground="#64748B" FontSize="12"/>
             </Grid>
         </Border>
     </Grid>

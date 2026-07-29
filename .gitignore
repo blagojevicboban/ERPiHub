@@ -4,6 +4,7 @@
 bin/
 obj/
 publish_output/
+ReleasePackage/
 *.user
 *.suo
 *.userosscache

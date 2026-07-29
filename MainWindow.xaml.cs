@@ -26,6 +26,36 @@ public partial class MainWindow : Window
         _companyService = new CompanyService();
 
         LoadData();
+
+        var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
+        var versionStr = version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "1.0.0";
+        TxtVersionInfo.Text = $"Velopack Auto-Update Active • v{versionStr}";
+
+        // Provera ažuriranja u pozadini pri pokretanju
+        _ = CheckForUpdatesAsync();
+    }
+
+    private async System.Threading.Tasks.Task CheckForUpdatesAsync()
+    {
+        try
+        {
+            var source = new Velopack.Sources.GithubSource(
+                "https://github.com/blagojevicboban/ErpHub",
+                null,
+                false);
+            var mgr = new Velopack.UpdateManager(source);
+            var newVersion = await mgr.CheckForUpdatesAsync();
+            if (newVersion != null)
+            {
+                var dialog = new UpdateDialog(newVersion, mgr);
+                dialog.Owner = this;
+                dialog.ShowDialog();
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Greška pri proveri ažuriranja: {ex.Message}");
+        }
     }
 
     private void LoadData()

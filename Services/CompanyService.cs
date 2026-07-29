@@ -42,7 +42,7 @@ public class CompanyService
                 Naziv = "PROMET DOO Beograd",
                 Pib = "100234567",
                 MaticniBroj = "07123456",
-                DbPath = @"C:\KNJIGE\AccountingSystem\AccountingApp\bin\Debug\net8.0-windows\accounting.db"
+                DbPath = @"C:\ERP\AccountingSystem\AccountingApp\bin\Debug\net8.0-windows\accounting.db"
             },
             new CompanyItem
             {
@@ -50,7 +50,7 @@ public class CompanyService
                 Naziv = "AGROTRADE PR Novi Sad",
                 Pib = "108987654",
                 MaticniBroj = "20456789",
-                DbPath = @"C:\KNJIGE\AccountingSystem\AccountingApp\bin\Debug\net8.0-windows\agrotrade.db"
+                DbPath = @"C:\ERP\AccountingSystem\AccountingApp\bin\Debug\net8.0-windows\agrotrade.db"
             }
         };
 

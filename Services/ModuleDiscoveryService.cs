@@ -58,20 +58,23 @@ public class ModuleDiscoveryService
         {
             "Accounting" => new[]
             {
+                @"C:\ERP\AccountingSystem\AccountingApp\bin\Debug\net8.0-windows\AccountingApp.exe",
+                @"C:\ERP\AccountingSystem\publish_output\AccountingApp.exe",
                 @"C:\KNJIGE\AccountingSystem\AccountingApp\bin\Debug\net8.0-windows\AccountingApp.exe",
-                @"C:\KNJIGE\AccountingSystem\publish_output\AccountingApp.exe",
                 Path.Combine(localAppData, "AccountingApp", "AccountingApp.exe")
             },
             "Plata" => new[]
             {
+                @"C:\ERP\PlataSistem\PlataApp\bin\Debug\net8.0-windows\PlataApp.exe",
+                @"C:\ERP\PlataSistem\publish_output\PlataApp.exe",
                 @"C:\PLATA\PlataSistem\PlataApp\bin\Debug\net8.0-windows\PlataApp.exe",
-                @"C:\PLATA\PlataSistem\publish_output\PlataApp.exe",
                 Path.Combine(localAppData, "PlataApp", "PlataApp.exe")
             },
             "Sredstva" => new[]
             {
+                @"C:\ERP\SredstvaSystem\SredstvaApp\bin\Debug\net8.0-windows\SredstvaApp.exe",
+                @"C:\ERP\SredstvaSystem\publish_output\SredstvaApp.exe",
                 @"C:\SREDSTVA\SredstvaSystem\SredstvaApp\bin\Debug\net8.0-windows\SredstvaApp.exe",
-                @"C:\SREDSTVA\SredstvaSystem\publish_output\SredstvaApp.exe",
                 Path.Combine(localAppData, "SredstvaApp", "SredstvaApp.exe")
             },
             _ => Array.Empty<string>()

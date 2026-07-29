@@ -1,6 +1,8 @@
+using System;
 using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Threading;
 using ErpHub.Models;
 using ErpHub.Services;
 
@@ -11,6 +13,7 @@ public partial class MainWindow : Window
     private readonly ModuleDiscoveryService _discoveryService;
     private readonly ModuleLauncherService _launcherService;
     private readonly CompanyService _companyService;
+    private readonly DispatcherTimer _statusTimer;
 
     public ObservableCollection<ModuleItem> Modules { get; } = new();
     public ObservableCollection<CompanyItem> Companies { get; } = new();
@@ -30,6 +33,14 @@ public partial class MainWindow : Window
         var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         var versionStr = version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "1.0.0";
         TxtVersionInfo.Text = $"Velopack Auto-Update Active • v{versionStr}";
+
+        // Tajmer za automatsku proveru i osvežavanje statusa procesa na svakih 3 sekunde
+        _statusTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromSeconds(3)
+        };
+        _statusTimer.Tick += (s, e) => RefreshModulesSilently();
+        _statusTimer.Start();
 
         // Provera ažuriranja u pozadini pri pokretanju
         _ = CheckForUpdatesAsync();
@@ -89,6 +100,14 @@ public partial class MainWindow : Window
         TxtStatus.Text = $"Osveženi statusi modula u {DateTime.Now:HH:mm:ss}";
     }
 
+    private void RefreshModulesSilently()
+    {
+        foreach (var m in Modules)
+        {
+            _discoveryService.RefreshModuleStatus(m);
+        }
+    }
+
     private void CmbCompany_SelectionChanged(object sender, SelectionChangedEventArgs e)
     {
         if (ActiveCompany != null)
@@ -116,12 +135,20 @@ public partial class MainWindow : Window
             }
 
             TxtStatus.Text = $"Pokretanje modula '{module.Title}' za firmu '{ActiveCompany.Naziv}'...";
-            bool success = _launcherService.LaunchModule(module, ActiveCompany);
+            bool success = _launcherService.LaunchModule(module, ActiveCompany, (mod) =>
+            {
+                // Kada se proces modula zatvori, automatski osveži status na UI-u
+                Dispatcher.Invoke(() =>
+                {
+                    _discoveryService.RefreshModuleStatus(mod);
+                    TxtStatus.Text = $"Modul '{mod.Title}' je zatvoren u {DateTime.Now:HH:mm:ss}.";
+                });
+            });
+
             if (success)
             {
                 TxtStatus.Text = $"Modul '{module.Title}' je uspešno pokrenut.";
                 _discoveryService.RefreshModuleStatus(module);
-                ModuleItemsControl.Items.Refresh();
             }
             else
             {

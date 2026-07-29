@@ -12,13 +12,9 @@ public partial class MainWindow : Window
 {
     private readonly ModuleDiscoveryService _discoveryService;
     private readonly ModuleLauncherService _launcherService;
-    private readonly CompanyService _companyService;
     private readonly DispatcherTimer _statusTimer;
 
     public ObservableCollection<ModuleItem> Modules { get; } = new();
-    public ObservableCollection<CompanyItem> Companies { get; } = new();
-
-    public CompanyItem? ActiveCompany => CmbCompany.SelectedItem as CompanyItem;
 
     public MainWindow()
     {
@@ -26,7 +22,6 @@ public partial class MainWindow : Window
 
         _discoveryService = new ModuleDiscoveryService();
         _launcherService = new ModuleLauncherService();
-        _companyService = new CompanyService();
 
         LoadData();
 
@@ -71,20 +66,6 @@ public partial class MainWindow : Window
 
     private void LoadData()
     {
-        // Učitavanje firmi
-        Companies.Clear();
-        var companyList = _companyService.GetCompanies();
-        foreach (var c in companyList)
-        {
-            Companies.Add(c);
-        }
-        CmbCompany.ItemsSource = Companies;
-        if (Companies.Count > 0)
-        {
-            CmbCompany.SelectedIndex = 0;
-        }
-
-        // Učitavanje modula
         RefreshModules();
     }
 
@@ -97,7 +78,7 @@ public partial class MainWindow : Window
             Modules.Add(m);
         }
         ModuleItemsControl.ItemsSource = Modules;
-        TxtStatus.Text = $"Osveženi statusi modula u {DateTime.Now:HH:mm:ss}";
+        TxtStatus.Text = $"Osveženi statusi modula i baza u {DateTime.Now:HH:mm:ss}";
     }
 
     private void RefreshModulesSilently()
@@ -108,34 +89,17 @@ public partial class MainWindow : Window
         }
     }
 
-    private void CmbCompany_SelectionChanged(object sender, SelectionChangedEventArgs e)
-    {
-        if (ActiveCompany != null)
-        {
-            TxtCompanyDb.Text = $"Baza: {ActiveCompany.DbPath}";
-        }
-        else
-        {
-            TxtCompanyDb.Text = "Baza: Nije izabrana";
-        }
-    }
-
     private void BtnLaunchModule_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button btn && btn.Tag is ModuleItem module)
         {
-            if (ActiveCompany == null)
-            {
-                MessageBox.Show(
-                    "Molimo izaberite aktivno preduzeće pre pokretanja modula.",
-                    "Firma nije izabrana",
-                    MessageBoxButton.OK,
-                    MessageBoxImage.Information);
-                return;
-            }
+            var companyToUse = module.SelectedCompany;
 
-            TxtStatus.Text = $"Pokretanje modula '{module.Title}' za firmu '{ActiveCompany.Naziv}'...";
-            bool success = _launcherService.LaunchModule(module, ActiveCompany, (mod) =>
+            TxtStatus.Text = companyToUse != null 
+                ? $"Pokretanje modula '{module.Title}' za bazu '{companyToUse.Naziv}'..."
+                : $"Pokretanje modula '{module.Title}'...";
+
+            bool success = _launcherService.LaunchModule(module, companyToUse, (mod) =>
             {
                 // Kada se proces modula zatvori, automatski osveži status na UI-u
                 Dispatcher.Invoke(() =>
@@ -162,10 +126,29 @@ public partial class MainWindow : Window
         RefreshModules();
     }
 
+    private void BtnOpenBazeFolder_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is Button btn && btn.Tag is string folderPath && !string.IsNullOrWhiteSpace(folderPath) && System.IO.Directory.Exists(folderPath))
+        {
+            try
+            {
+                System.Diagnostics.Process.Start("explorer.exe", folderPath);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Greška pri otvaranju foldera:\n{ex.Message}", "Greška", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        else
+        {
+            MessageBox.Show("Folder sa bazama za ovaj modul još nije kreiran ili nije pronađen na disku.", "Obaveštenje", MessageBoxButton.OK, MessageBoxImage.Information);
+        }
+    }
+
     private void BtnSettings_Click(object sender, RoutedEventArgs e)
     {
         MessageBox.Show(
-            "Podešavanja ERP Hub-a:\n\n- Putanje do modula se automatski detektuju.\n- Baze se konfigurišu u `companies.json`.\n- Velopack update je aktivan.",
+            "Podešavanja ERP Hub-a:\n\n- Putanje do modula i baza se automatski detektuju za svaki modul pojedinačno.\n- Izbor baze/preduzeća se nalazi direktno na kartici modula.\n- Velopack update je aktivan.",
             "ERP Hub Podešavanja",
             MessageBoxButton.OK,
             MessageBoxImage.Information);

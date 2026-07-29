@@ -6,8 +6,8 @@
         xmlns:local="clr-namespace:ErpHub"
         mc:Ignorable="d"
         Title="Poslovni Sistem — ERP Control Center"
-        Height="720" Width="1100"
-        MinHeight="650" MinWidth="950"
+        Height="740" Width="1120"
+        MinHeight="650" MinWidth="980"
         WindowStartupLocation="CenterScreen"
         Background="#F4F6F9"
         FontFamily="Segoe UI, Roboto, sans-serif">
@@ -74,7 +74,6 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/> <!-- Top Bar Header -->
-            <RowDefinition Height="Auto"/> <!-- Company Selector Sub-Bar -->
             <RowDefinition Height="*"/>    <!-- Module Cards Grid -->
             <RowDefinition Height="Auto"/> <!-- Status Footer -->
         </Grid.RowDefinitions>
@@ -91,7 +90,7 @@
                     <TextBlock Text="🚀" FontSize="26" Margin="0,0,12,0"/>
                     <StackPanel>
                         <TextBlock Text="Poslovni Sistem — ERP Control Center" FontSize="20" FontWeight="Bold" Foreground="White"/>
-                        <TextBlock Text="Centralni upravljački panel za finansije, zarade i osnovna sredstva" FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                        <TextBlock Text="Centralni upravljački panel sa nezavisnom selekcijom baza po modulima" FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0"/>
                     </StackPanel>
                 </StackPanel>
 
@@ -102,30 +101,8 @@
             </Grid>
         </Border>
 
-        <!-- COMPANY SELECTOR BAR -->
-        <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="24,12">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto"/>
-                    <ColumnDefinition Width="350"/>
-                    <ColumnDefinition Width="*"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0">
-                    <TextBlock Text="🏢 Aktivno Preduzeće / Firma:" FontWeight="SemiBold" FontSize="14" Foreground="#334155" VerticalAlignment="Center"/>
-                </StackPanel>
-
-                <ComboBox Grid.Column="1" x:Name="CmbCompany" DisplayMemberPath="DisplayText" 
-                          SelectedValuePath="Id" SelectionChanged="CmbCompany_SelectionChanged"
-                          FontSize="14" Padding="10,6" VerticalAlignment="Center"/>
-
-                <TextBlock Grid.Column="2" x:Name="TxtCompanyDb" Text="Baza: --" 
-                           FontSize="12" Foreground="#64748B" VerticalAlignment="Center" Margin="16,0,0,0" TextTrimming="CharacterEllipsis"/>
-            </Grid>
-        </Border>
-
         <!-- MODULE CARDS GRID -->
-        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="24">
+        <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="20">
             <ItemsControl x:Name="ModuleItemsControl">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
@@ -135,10 +112,10 @@
 
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
-                        <Border Margin="12" Background="White" CornerRadius="12" Effect="{StaticResource CardShadow}">
+                        <Border Margin="10" Background="White" CornerRadius="12" Effect="{StaticResource CardShadow}">
                             <Grid>
                                 <Grid.RowDefinitions>
-                                    <RowDefinition Height="110"/> <!-- Card Header Banner -->
+                                    <RowDefinition Height="105"/> <!-- Card Header Banner -->
                                     <RowDefinition Height="*"/>   <!-- Card Body Content -->
                                     <RowDefinition Height="Auto"/> <!-- Card Footer Actions -->
                                 </Grid.RowDefinitions>
@@ -158,11 +135,11 @@
                                             <ColumnDefinition Width="*"/>
                                         </Grid.ColumnDefinitions>
 
-                                        <TextBlock Text="{Binding Icon}" FontSize="42" VerticalAlignment="Center" Margin="0,0,14,0"/>
+                                        <TextBlock Text="{Binding Icon}" FontSize="40" VerticalAlignment="Center" Margin="0,0,12,0"/>
 
                                         <StackPanel Grid.Column="1" VerticalAlignment="Center">
                                             <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold" Foreground="White" TextWrapping="Wrap"/>
-                                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#F1F5F9" TextWrapping="Wrap" Margin="0,4,0,0" Opacity="0.9"/>
+                                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#F1F5F9" TextWrapping="Wrap" Margin="0,3,0,0" Opacity="0.9"/>
                                         </StackPanel>
                                     </Grid>
                                 </Border>
@@ -170,9 +147,17 @@
                                 <!-- Body Details -->
                                 <Border Grid.Row="1" Padding="16">
                                     <StackPanel>
-                                        <TextBlock Text="{Binding Description}" FontSize="12.5" Foreground="#475569" TextWrapping="Wrap" Height="65" LineHeight="18"/>
+                                        <TextBlock Text="{Binding Description}" FontSize="12" Foreground="#475569" TextWrapping="Wrap" Height="58" LineHeight="17"/>
 
-                                        <Separator Margin="0,10" Background="#F1F5F9"/>
+                                        <Separator Margin="0,8" Background="#F1F5F9"/>
+
+                                        <!-- Selektor Baze / Preduzeća za ovaj modul -->
+                                        <StackPanel Margin="0,2,0,8">
+                                            <TextBlock Text="🏢 Aktivna baza / preduzeće:" FontSize="11.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,4"/>
+                                            <ComboBox ItemsSource="{Binding Companies}" DisplayMemberPath="DisplayText"
+                                                      SelectedItem="{Binding SelectedCompany, Mode=TwoWay}"
+                                                      FontSize="12" Padding="8,5" Background="#F8FAFC"/>
+                                        </StackPanel>
 
                                         <Grid Margin="0,4,0,0">
                                             <Grid.ColumnDefinitions>
@@ -183,7 +168,7 @@
                                             <TextBlock Grid.Column="1" Text="{Binding StatusText}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Right"/>
                                         </Grid>
 
-                                        <Grid Margin="0,6,0,0">
+                                        <Grid Margin="0,4,0,0">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="Auto"/>
                                                 <ColumnDefinition Width="*"/>
@@ -191,15 +176,39 @@
                                             <TextBlock Text="Verzija:" FontSize="12" Foreground="#64748B"/>
                                             <TextBlock Grid.Column="1" Text="{Binding InstalledVersion}" FontSize="12" Foreground="#334155" HorizontalAlignment="Right"/>
                                         </Grid>
+
+                                        <Grid Margin="0,4,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Registrovane baze:" FontSize="12" Foreground="#64748B"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding CompanyCountText}" FontSize="12" FontWeight="SemiBold" Foreground="#2563EB" HorizontalAlignment="Right"/>
+                                        </Grid>
+
+                                        <Grid Margin="0,4,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Zadnje pokretanje:" FontSize="12" Foreground="#64748B"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding LastLaunchedText}" FontSize="12" Foreground="#64748B" HorizontalAlignment="Right"/>
+                                        </Grid>
                                     </StackPanel>
                                 </Border>
 
-                                <!-- Footer Action Button -->
+                                <!-- Footer Action Buttons -->
                                 <Border Grid.Row="2" Padding="16,12" Background="#F8FAFC" CornerRadius="0,0,12,12" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0">
                                     <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*"/>
+                                            <ColumnDefinition Width="Auto"/>
+                                        </Grid.ColumnDefinitions>
                                         <Button Content="▶ Pokreni Modul" Tag="{Binding}" Click="BtnLaunchModule_Click" 
                                                 IsEnabled="{Binding CanLaunch}"
-                                                Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Stretch"/>
+                                                Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Stretch" Margin="0,0,8,0"/>
+                                        <Button Grid.Column="1" Content="📂 Baze" Tag="{Binding BazeFolderPath}" Click="BtnOpenBazeFolder_Click"
+                                                Style="{StaticResource SecondaryButtonStyle}" ToolTip="Otvori folder sa bazama podataka na disku"/>
                                     </Grid>
                                 </Border>
                             </Grid>
@@ -210,7 +219,7 @@
         </ScrollViewer>
 
         <!-- STATUS FOOTER -->
-        <Border Grid.Row="3" Background="#1E293B" Padding="16,8">
+        <Border Grid.Row="2" Background="#1E293B" Padding="16,8">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

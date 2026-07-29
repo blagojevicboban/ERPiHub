@@ -1,4 +1,5 @@
 using System;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -19,6 +20,9 @@ public class ModuleItem : INotifyPropertyChanged
     private string _installedVersion = "1.0.0";
     private string _availableVersion = string.Empty;
     private DateTime? _lastLaunched;
+    private string _companyCountText = "📁 0 baza firmi";
+    private string _bazeFolderPath = string.Empty;
+    private CompanyItem? _selectedCompany;
 
     public required string Id { get; set; }
     public required string Title { get; set; }
@@ -27,6 +31,14 @@ public class ModuleItem : INotifyPropertyChanged
     public required string Icon { get; set; }
     public required string HeaderGradientStart { get; set; }
     public required string HeaderGradientEnd { get; set; }
+
+    public ObservableCollection<CompanyItem> Companies { get; } = new();
+
+    public CompanyItem? SelectedCompany
+    {
+        get => _selectedCompany;
+        set { if (_selectedCompany != value) { _selectedCompany = value; OnPropertyChanged(); } }
+    }
 
     public string ExePath
     {
@@ -62,11 +74,27 @@ public class ModuleItem : INotifyPropertyChanged
         }
     }
 
+    public string CompanyCountText
+    {
+        get => _companyCountText;
+        set { if (_companyCountText != value) { _companyCountText = value; OnPropertyChanged(); } }
+    }
+
+    public string BazeFolderPath
+    {
+        get => _bazeFolderPath;
+        set { if (_bazeFolderPath != value) { _bazeFolderPath = value; OnPropertyChanged(); } }
+    }
+
     public DateTime? LastLaunched
     {
         get => _lastLaunched;
-        set { if (_lastLaunched != value) { _lastLaunched = value; OnPropertyChanged(); } }
+        set { if (_lastLaunched != value) { _lastLaunched = value; OnPropertyChanged(); OnPropertyChanged(nameof(LastLaunchedText)); } }
     }
+
+    public string LastLaunchedText => LastLaunched.HasValue
+        ? $"🕒 Pokrenut: {LastLaunched.Value:HH:mm:ss}"
+        : "🕒 Nije pokretan u sesiji";
 
     public string StatusText => Status switch
     {

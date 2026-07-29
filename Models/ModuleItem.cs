@@ -9,8 +9,16 @@ public enum ModuleStatus
 {
     NotInstalled,
     Installed,
-    Running,
-    UpdateAvailable
+    Running
+}
+
+public enum UpdateCheckState
+{
+    Unknown,
+    Checking,
+    UpToDate,
+    UpdateAvailable,
+    CheckFailed
 }
 
 public class ModuleItem : INotifyPropertyChanged
@@ -19,6 +27,7 @@ public class ModuleItem : INotifyPropertyChanged
     private string _exePath = string.Empty;
     private string _installedVersion = "1.0.0";
     private string _availableVersion = string.Empty;
+    private UpdateCheckState _updateState = UpdateCheckState.Unknown;
     private DateTime? _lastLaunched;
     private string _companyCountText = "📁 0 baza firmi";
     private string _bazeFolderPath = string.Empty;
@@ -55,7 +64,13 @@ public class ModuleItem : INotifyPropertyChanged
     public string AvailableVersion
     {
         get => _availableVersion;
-        set { if (_availableVersion != value) { _availableVersion = value; OnPropertyChanged(); OnPropertyChanged(nameof(StatusText)); } }
+        set { if (_availableVersion != value) { _availableVersion = value; OnPropertyChanged(); OnPropertyChanged(nameof(UpdateStatusText)); } }
+    }
+
+    public UpdateCheckState UpdateState
+    {
+        get => _updateState;
+        set { if (_updateState != value) { _updateState = value; OnPropertyChanged(); OnPropertyChanged(nameof(UpdateStatusText)); } }
     }
 
     public ModuleStatus Status
@@ -69,7 +84,6 @@ public class ModuleItem : INotifyPropertyChanged
                 OnPropertyChanged();
                 OnPropertyChanged(nameof(StatusText));
                 OnPropertyChanged(nameof(CanLaunch));
-                OnPropertyChanged(nameof(CanUpdate));
             }
         }
     }
@@ -99,14 +113,21 @@ public class ModuleItem : INotifyPropertyChanged
     public string StatusText => Status switch
     {
         ModuleStatus.Running => "🟢 Pokrenut",
-        ModuleStatus.UpdateAvailable => $"🟡 Dostupno ažuriranje (v{AvailableVersion})",
         ModuleStatus.Installed => $"🔵 Instaliran (v{InstalledVersion})",
         ModuleStatus.NotInstalled => "⚪ Nije pronađen executable",
         _ => "Nepoznato"
     };
 
-    public bool CanLaunch => Status == ModuleStatus.Installed || Status == ModuleStatus.UpdateAvailable || Status == ModuleStatus.Running;
-    public bool CanUpdate => Status == ModuleStatus.UpdateAvailable;
+    public string UpdateStatusText => UpdateState switch
+    {
+        UpdateCheckState.Checking => "⏳ Provera ažurnosti...",
+        UpdateCheckState.UpToDate => "✅ Ažurna verzija",
+        UpdateCheckState.UpdateAvailable => $"🟡 Dostupno ažuriranje (v{AvailableVersion})",
+        UpdateCheckState.CheckFailed => "❔ Provera nije uspela",
+        _ => "—"
+    };
+
+    public bool CanLaunch => Status == ModuleStatus.Installed || Status == ModuleStatus.Running;
 
     public event PropertyChangedEventHandler? PropertyChanged;
 

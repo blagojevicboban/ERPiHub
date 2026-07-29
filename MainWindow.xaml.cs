@@ -12,6 +12,7 @@ public partial class MainWindow : Window
 {
     private readonly ModuleDiscoveryService _discoveryService;
     private readonly ModuleLauncherService _launcherService;
+    private readonly UpdateCheckService _updateCheckService;
     private readonly DispatcherTimer _statusTimer;
 
     public ObservableCollection<ModuleItem> Modules { get; } = new();
@@ -22,8 +23,10 @@ public partial class MainWindow : Window
 
         _discoveryService = new ModuleDiscoveryService();
         _launcherService = new ModuleLauncherService();
+        _updateCheckService = new UpdateCheckService();
 
         LoadData();
+        _ = CheckModuleUpdatesAsync();
 
         var version = System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
         var versionStr = version != null ? $"{version.Major}.{version.Minor}.{version.Build}" : "1.0.0";
@@ -89,6 +92,16 @@ public partial class MainWindow : Window
         }
     }
 
+    private async System.Threading.Tasks.Task CheckModuleUpdatesAsync()
+    {
+        var checks = new System.Collections.Generic.List<System.Threading.Tasks.Task>();
+        foreach (var m in Modules)
+        {
+            checks.Add(_updateCheckService.RefreshUpdateStatusAsync(m));
+        }
+        await System.Threading.Tasks.Task.WhenAll(checks);
+    }
+
     private void BtnLaunchModule_Click(object sender, RoutedEventArgs e)
     {
         if (sender is Button btn && btn.Tag is ModuleItem module)
@@ -124,6 +137,7 @@ public partial class MainWindow : Window
     private void BtnRefresh_Click(object sender, RoutedEventArgs e)
     {
         RefreshModules();
+        _ = CheckModuleUpdatesAsync();
     }
 
     private void BtnOpenBazeFolder_Click(object sender, RoutedEventArgs e)

@@ -1,0 +1,14 @@
+## Visual Studio / .NET Core
+.vs/
+.vscode/
+bin/
+obj/
+publish_output/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+## Local data
+companies.json
+crash.log

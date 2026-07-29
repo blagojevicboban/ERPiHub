@@ -1,0 +1,224 @@
+<Window x:Class="ErpHub.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ErpHub"
+        mc:Ignorable="d"
+        Title="Poslovni Sistem — ERP Control Center"
+        Height="720" Width="1100"
+        MinHeight="650" MinWidth="950"
+        WindowStartupLocation="CenterScreen"
+        Background="#F4F6F9"
+        FontFamily="Segoe UI, Roboto, sans-serif">
+
+    <Window.Resources>
+        <!-- Shadow Drop Effect -->
+        <DropShadowEffect x:Key="CardShadow" BlurRadius="15" ShadowDepth="4" Direction="270" Color="#1E000000" Opacity="0.12"/>
+        <DropShadowEffect x:Key="HeaderShadow" BlurRadius="10" ShadowDepth="2" Direction="270" Color="#2E000000" Opacity="0.15"/>
+
+        <!-- Button Style Base -->
+        <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#2563EB"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="18,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#1D4ED8"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#9CA3AF"/>
+                    <Setter Property="Foreground" Value="#E5E7EB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#E5E7EB"/>
+            <Setter Property="Foreground" Value="#374151"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="12,8"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#D1D5DB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/> <!-- Top Bar Header -->
+            <RowDefinition Height="Auto"/> <!-- Company Selector Sub-Bar -->
+            <RowDefinition Height="*"/>    <!-- Module Cards Grid -->
+            <RowDefinition Height="Auto"/> <!-- Status Footer -->
+        </Grid.RowDefinitions>
+
+        <!-- TOP BAR HEADER -->
+        <Border Grid.Row="0" Background="#1E293B" Padding="24,18" Effect="{StaticResource HeaderShadow}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="🚀" FontSize="26" Margin="0,0,12,0"/>
+                    <StackPanel>
+                        <TextBlock Text="Poslovni Sistem — ERP Control Center" FontSize="20" FontWeight="Bold" Foreground="White"/>
+                        <TextBlock Text="Centralni upravljački panel za finansije, zarade i osnovna sredstva" FontSize="12" Foreground="#94A3B8" Margin="0,2,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Content="🔄 Osveži status" Click="BtnRefresh_Click" Style="{StaticResource SecondaryButtonStyle}" Margin="0,0,10,0"/>
+                    <Button Content="⚙️ Podešavanja" Click="BtnSettings_Click" Style="{StaticResource SecondaryButtonStyle}"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- COMPANY SELECTOR BAR -->
+        <Border Grid.Row="1" Background="#FFFFFF" BorderBrush="#E2E8F0" BorderThickness="0,0,0,1" Padding="24,12">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="350"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,16,0">
+                    <TextBlock Text="🏢 Aktivno Preduzeće / Firma:" FontWeight="SemiBold" FontSize="14" Foreground="#334155" VerticalAlignment="Center"/>
+                </StackPanel>
+
+                <ComboBox Grid.Column="1" x:Name="CmbCompany" DisplayMemberPath="DisplayText" 
+                          SelectedValuePath="Id" SelectionChanged="CmbCompany_SelectionChanged"
+                          FontSize="14" Padding="10,6" VerticalAlignment="Center"/>
+
+                <TextBlock Grid.Column="2" x:Name="TxtCompanyDb" Text="Baza: --" 
+                           FontSize="12" Foreground="#64748B" VerticalAlignment="Center" Margin="16,0,0,0" TextTrimming="CharacterEllipsis"/>
+            </Grid>
+        </Border>
+
+        <!-- MODULE CARDS GRID -->
+        <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="24">
+            <ItemsControl x:Name="ModuleItemsControl">
+                <ItemsControl.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <UniformGrid Columns="3"/>
+                    </ItemsPanelTemplate>
+                </ItemsControl.ItemsPanel>
+
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Margin="12" Background="White" CornerRadius="12" Effect="{StaticResource CardShadow}">
+                            <Grid>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="110"/> <!-- Card Header Banner -->
+                                    <RowDefinition Height="*"/>   <!-- Card Body Content -->
+                                    <RowDefinition Height="Auto"/> <!-- Card Footer Actions -->
+                                </Grid.RowDefinitions>
+
+                                <!-- Header Banner with Gradient -->
+                                <Border Grid.Row="0" CornerRadius="12,12,0,0" Padding="16">
+                                    <Border.Background>
+                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                            <GradientStop Color="{Binding HeaderGradientStart}" Offset="0"/>
+                                            <GradientStop Color="{Binding HeaderGradientEnd}" Offset="1"/>
+                                        </LinearGradientBrush>
+                                    </Border.Background>
+
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="Auto"/>
+                                            <ColumnDefinition Width="*"/>
+                                        </Grid.ColumnDefinitions>
+
+                                        <TextBlock Text="{Binding Icon}" FontSize="42" VerticalAlignment="Center" Margin="0,0,14,0"/>
+
+                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold" Foreground="White" TextWrapping="Wrap"/>
+                                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#F1F5F9" TextWrapping="Wrap" Margin="0,4,0,0" Opacity="0.9"/>
+                                        </StackPanel>
+                                    </Grid>
+                                </Border>
+
+                                <!-- Body Details -->
+                                <Border Grid.Row="1" Padding="16">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Description}" FontSize="12.5" Foreground="#475569" TextWrapping="Wrap" Height="65" LineHeight="18"/>
+
+                                        <Separator Margin="0,10" Background="#F1F5F9"/>
+
+                                        <Grid Margin="0,4,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Status:" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding StatusText}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                        </Grid>
+
+                                        <Grid Margin="0,6,0,0">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
+                                            <TextBlock Text="Verzija:" FontSize="12" Foreground="#64748B"/>
+                                            <TextBlock Grid.Column="1" Text="{Binding InstalledVersion}" FontSize="12" Foreground="#334155" HorizontalAlignment="Right"/>
+                                        </Grid>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Footer Action Button -->
+                                <Border Grid.Row="2" Padding="16,12" Background="#F8FAFC" CornerRadius="0,0,12,12" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0">
+                                    <Grid>
+                                        <Button Content="▶ Pokreni Modul" Tag="{Binding}" Click="BtnLaunchModule_Click" 
+                                                IsEnabled="{Binding CanLaunch}"
+                                                Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Stretch"/>
+                                    </Grid>
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+
+        <!-- STATUS FOOTER -->
+        <Border Grid.Row="3" Background="#1E293B" Padding="16,8">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock x:Name="TxtStatus" Text="ERP Hub spreman za rad." Foreground="#94A3B8" FontSize="12"/>
+                <TextBlock Grid.Column="1" Text="Velopack Integration Enabled • v1.0.0" Foreground="#64748B" FontSize="12"/>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

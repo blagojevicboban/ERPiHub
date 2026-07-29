@@ -5,6 +5,21 @@ Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) s
 
 ---
 
+## [1.0.1] - 2026-07-29
+
+### 🚀 Nove Funkcionalnosti & Arhitektura
+- **Nezavisni Selektori Baza po Modulima:** Izmešten globalni selektor sa vrha u nezavisne padajuće menije `🏢 Aktivna baza / preduzeće:` na svakoj kartici modula pojedinačno.
+- **Autodetekcija Realnih SQLite Baza:** Implementiran SQLite skener u `CompanyService` koji automatski pronalazi i očitava sve realne baze i preduzeća na disku.
+- **Prečica za Otvaranje Foldera sa Bazama:** Dodato dugme `📂 Baze` na dnu svake kartice koje jednim klikom otvara folder sa `.db` fajlovima u Windows Explorer-u.
+
+### 🎨 Dizajn i Ikonica
+- **Moderna 3D Aplikativna Ikonica (`app.ico`):** Ugrađena brendirana ikonica za `ErpHub.exe` i Velopack `Setup.exe` instalacioni paket.
+
+### ⚡ Performanse i Stabilnost
+- **Instant Praćenje Izlaska Procesa:** Poboljšan `Process.Exited` slušalac i `INotifyPropertyChanged` u modelu radi trenutačnog reagovanja pri zatvaranju modula.
+
+---
+
 ## [1.0.0] - 2026-07-29
 
 ### 🚀 Nove Funkcionalnosti

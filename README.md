@@ -1,6 +1,6 @@
 # 🚀 ErpHub — Poslovni Sistem Control Center
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)
+![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)
 ![NET](https://img.shields.io/badge/.NET-8.0--windows-purple.svg)
 ![UI](https://img.shields.io/badge/UI-WPF%20%7C%20Modern%20Design-success.svg)
 ![Updater](https://img.shields.io/badge/Auto--Update-Velopack-orange.svg)

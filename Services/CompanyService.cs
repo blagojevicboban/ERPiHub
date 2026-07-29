@@ -112,7 +112,8 @@ public class CompanyService
             var cs = new SqliteConnectionStringBuilder
             {
                 DataSource = dbPath,
-                Mode = SqliteOpenMode.ReadOnly
+                Mode = SqliteOpenMode.ReadOnly,
+                Pooling = false
             }.ConnectionString;
 
             using var conn = new SqliteConnection(cs);

@@ -5,7 +5,18 @@ Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) s
 
 ---
 
+## [1.0.6] - 2026-07-29
+
+### 🎨 UI / UX i Usklađivanje Boja
+- **Usklađene boje kartica sa aplikacijama**: Gradijenti na karticama modula ažurirani tako da tačno odgovaraju primarnim i akcentnim bojama svake aplikacije pojedinačno:
+  - **Finansije (`AccountingApp`)**: `#1E40AF → #2563EB` (plava paleta)
+  - **Plata (`PlataApp`)**: `#1A237E → #3949AB` (indigo paleta)
+  - **Sredstva (`SredstvaApp`)**: `#1B4332 → #2D6A4F` (zelena paleta)
+
+---
+
 ## [1.0.1] - 2026-07-29
+
 
 ### 🚀 Nove Funkcionalnosti & Arhitektura
 - **Nezavisni Selektori Baza po Modulima:** Izmešten globalni selektor sa vrha u nezavisne padajuće menije `🏢 Aktivna baza / preduzeće:` na svakoj kartici modula pojedinačno.

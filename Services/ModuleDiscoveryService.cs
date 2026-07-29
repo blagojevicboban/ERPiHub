@@ -20,8 +20,8 @@ public class ModuleDiscoveryService
                 Subtitle = "Glavna knjiga, robno-materijalno, kupci i dobavljači",
                 Description = "Kompletan modul za finansijsko knjigovodstvo, nivelacije, popise, robne kartice, izvod banke i bilanse.",
                 Icon = "📘",
-                HeaderGradientStart = "#1E3C72",
-                HeaderGradientEnd = "#2A5298"
+                HeaderGradientStart = "#1E40AF",
+                HeaderGradientEnd = "#2563EB"
             },
             new ModuleItem
             {
@@ -30,8 +30,8 @@ public class ModuleDiscoveryService
                 Subtitle = "Evidencija zaposlenih, bolovanja, obrok/prevoz i PPP-PD",
                 Description = "Modul za obračun plata, izradu platnih listića u PDF-u, generisanje XML-a za Poresku upravu i virmana za banku.",
                 Icon = "💼",
-                HeaderGradientStart = "#11998E",
-                HeaderGradientEnd = "#38EF7D"
+                HeaderGradientStart = "#1A237E",
+                HeaderGradientEnd = "#3949AB"
             },
             new ModuleItem
             {
@@ -40,8 +40,8 @@ public class ModuleDiscoveryService
                 Subtitle = "Evidencija opreme, MRS 16, Poreski bilans (PB-1 & OA)",
                 Description = "Modul za evidenciju osnovnih sredstava, popise, bar-kod nalepnice, revalorizaciju i amortizaciju po MRS 16 i OA pravilu.",
                 Icon = "🏢",
-                HeaderGradientStart = "#FF8008",
-                HeaderGradientEnd = "#FFC837"
+                HeaderGradientStart = "#1B4332",
+                HeaderGradientEnd = "#2D6A4F"
             }
         };
 

@@ -57,10 +57,13 @@ public class ModuleDiscoveryService
     {
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
+        // Prava Velopack instalacija (ono što korisnik stvarno pokreće i što se auto-ažurira) uvek
+        // ima prioritet nad razvojnim bin/Debug kopijama — živi u %LocalAppData%\<PackId>\current\.
         var candidatePaths = module.Id switch
         {
             "Accounting" => new[]
             {
+                Path.Combine(localAppData, "AccountingSystem", "current", "AccountingApp.exe"),
                 @"C:\ERP\AccountingSystem\AccountingApp\bin\Debug\net8.0-windows\AccountingApp.exe",
                 @"C:\ERP\AccountingSystem\publish_output\AccountingApp.exe",
                 @"C:\KNJIGE\AccountingSystem\AccountingApp\bin\Debug\net8.0-windows\AccountingApp.exe",
@@ -68,13 +71,15 @@ public class ModuleDiscoveryService
             },
             "Plata" => new[]
             {
-                @"C:\ERP\PlataSistem\PlataApp\bin\Debug\net8.0-windows\PlataApp.exe",
+                Path.Combine(localAppData, "PlataSistem", "current", "PlataApp.exe"),
+                @"C:\ERP\PlataSistem\PlataSistem\PlataApp\bin\Debug\net8.0-windows\PlataApp.exe",
                 @"C:\ERP\PlataSistem\publish_output\PlataApp.exe",
                 @"C:\PLATA\PlataSistem\PlataApp\bin\Debug\net8.0-windows\PlataApp.exe",
                 Path.Combine(localAppData, "PlataApp", "PlataApp.exe")
             },
             "Sredstva" => new[]
             {
+                Path.Combine(localAppData, "SredstvaSystem", "current", "SredstvaApp.exe"),
                 @"C:\ERP\SredstvaSystem\SredstvaApp\bin\Debug\net8.0-windows\SredstvaApp.exe",
                 @"C:\ERP\SredstvaSystem\publish_output\SredstvaApp.exe",
                 @"C:\SREDSTVA\SredstvaSystem\SredstvaApp\bin\Debug\net8.0-windows\SredstvaApp.exe",

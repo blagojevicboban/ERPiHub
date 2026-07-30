@@ -5,6 +5,14 @@ Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) s
 
 ---
 
+## [1.0.7] - 2026-07-30
+
+### 🏢 Rebrendiranje i Novi Vizuelni Identitet
+- **Ažuriran Modul ERPi ZARADE**: Naziv modula preimenovan iz *ERPi Plate* u **`ERPi Zarade`** u `ModuleDiscoveryService` sa prosirenim opisima za ugovore o delu i PP poslove.
+- **🎨 Zvanična ERPi HUB Ikonica**: Dodata nova visoko-rezoluciona ikona `app.ico` (motiv poslovne aktovke + ERPi HUB) na plavoj zaobljenoj podlozi (`#2563EB`).
+
+---
+
 ## [1.0.6] - 2026-07-29
 
 ### 🎨 UI / UX i Usklađivanje Boja

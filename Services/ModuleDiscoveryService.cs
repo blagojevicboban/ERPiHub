@@ -16,9 +16,9 @@ public class ModuleDiscoveryService
             new ModuleItem
             {
                 Id = "Accounting",
-                Title = "Finansije & Magacin",
-                Subtitle = "Glavna knjiga, robno-materijalno, kupci i dobavljači",
-                Description = "Kompletan modul za finansijsko knjigovodstvo, nivelacije, popise, robne kartice, izvod banke i bilanse.",
+                Title = "ERPi Finansije",
+                Subtitle = "Glavna knjiga, robno, materijalno i bilansi",
+                Description = "Kompletan ERPi modul za finansijsko knjigovodstvo, naloze, robno-materijalno poslovanje, kalkulacije, IOS i APR bilanse.",
                 Icon = "📘",
                 HeaderGradientStart = "#1E40AF",
                 HeaderGradientEnd = "#2563EB"
@@ -26,9 +26,9 @@ public class ModuleDiscoveryService
             new ModuleItem
             {
                 Id = "Plata",
-                Title = "Obračun Zarada",
-                Subtitle = "Evidencija zaposlenih, bolovanja, obrok/prevoz i PPP-PD",
-                Description = "Modul za obračun plata, izradu platnih listića u PDF-u, generisanje XML-a za Poresku upravu i virmana za banku.",
+                Title = "ERPi Zarade",
+                Subtitle = "Obračun zarada, ugovori o delu i kadrovska evidencija",
+                Description = "Kompletan ERPi modul za obračun zarada, ugovore o delu, PP poslove, kadrovsku evidenciju, platne listiće, XML za Poresku upravu i virmane.",
                 Icon = "💼",
                 HeaderGradientStart = "#1A237E",
                 HeaderGradientEnd = "#3949AB"
@@ -36,9 +36,9 @@ public class ModuleDiscoveryService
             new ModuleItem
             {
                 Id = "Sredstva",
-                Title = "Osnovna Sredstva",
-                Subtitle = "Evidencija opreme, MRS 16, Poreski bilans (PB-1 & OA)",
-                Description = "Modul za evidenciju osnovnih sredstava, popise, bar-kod nalepnice, revalorizaciju i amortizaciju po MRS 16 i OA pravilu.",
+                Title = "ERPi Sredstva",
+                Subtitle = "Osnovna sredstva i sitan inventar",
+                Description = "Kompletan ERPi modul za evidenciju osnovnih sredstava, popise, bar-kod nalepnice, revalorizaciju i amortizaciju po MRS 16 i OA.",
                 Icon = "🏢",
                 HeaderGradientStart = "#1B4332",
                 HeaderGradientEnd = "#2D6A4F"

@@ -14,6 +14,7 @@ public partial class MainWindow : Window
     private readonly ModuleLauncherService _launcherService;
     private readonly UpdateCheckService _updateCheckService;
     private readonly ModuleUpdateService _moduleUpdateService;
+    private readonly ModuleInstallService _moduleInstallService;
     private readonly DispatcherTimer _statusTimer;
 
     public ObservableCollection<ModuleItem> Modules { get; } = new();
@@ -26,6 +27,7 @@ public partial class MainWindow : Window
         _launcherService = new ModuleLauncherService();
         _updateCheckService = new UpdateCheckService();
         _moduleUpdateService = new ModuleUpdateService();
+        _moduleInstallService = new ModuleInstallService();
 
         LoadData();
         _ = CheckModuleUpdatesAsync();
@@ -180,6 +182,87 @@ public partial class MainWindow : Window
         finally
         {
             module.IsUpdating = false;
+        }
+    }
+
+    private async void BtnInstallModule_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button btn || btn.Tag is not ModuleItem module) return;
+
+        var confirm = MessageBox.Show(
+            $"Preuzeti i instalirati modul '{module.Title}' (v{module.AvailableInstallVersion})?",
+            "Potvrda instalacije",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Question);
+
+        if (confirm != MessageBoxResult.Yes) return;
+
+        module.IsInstalling = true;
+        module.InstallProgressPercent = 0;
+        module.InstallIsIndeterminate = false;
+        module.InstallProgressLabel = string.Empty;
+        try
+        {
+            var result = await _moduleInstallService.InstallAsync(module, progress =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    TxtStatus.Text = progress.Label;
+                    module.InstallProgressLabel = progress.Label;
+                    module.InstallProgressPercent = progress.Percent;
+                    module.InstallIsIndeterminate = progress.Indeterminate;
+                });
+            });
+
+            if (result.Success)
+            {
+                TxtStatus.Text = result.Message;
+                _discoveryService.RefreshModuleStatus(module);
+                await _updateCheckService.RefreshUpdateStatusAsync(module);
+            }
+            else
+            {
+                TxtStatus.Text = result.Message;
+                MessageBox.Show(result.Message, "Instalacija nije uspela", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        finally
+        {
+            module.IsInstalling = false;
+        }
+    }
+
+    private async void BtnUninstallModule_Click(object sender, RoutedEventArgs e)
+    {
+        if (sender is not Button btn || btn.Tag is not ModuleItem module) return;
+
+        var confirm = MessageBox.Show(
+            $"Deinstalirati modul '{module.Title}'?\n\nOvo uklanja program sa računara. Baze podataka i firme ostaju sačuvane na disku.",
+            "Potvrda deinstalacije",
+            MessageBoxButton.YesNo,
+            MessageBoxImage.Warning);
+
+        if (confirm != MessageBoxResult.Yes) return;
+
+        module.IsUninstalling = true;
+        try
+        {
+            var result = await _moduleUpdateService.UninstallAsync(module);
+
+            TxtStatus.Text = result.Message;
+            if (result.Success)
+            {
+                _discoveryService.RefreshModuleStatus(module);
+                await _updateCheckService.RefreshUpdateStatusAsync(module);
+            }
+            else
+            {
+                MessageBox.Show(result.Message, "Deinstalacija nije uspela", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+        }
+        finally
+        {
+            module.IsUninstalling = false;
         }
     }
 

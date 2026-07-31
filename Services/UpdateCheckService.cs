@@ -30,16 +30,19 @@ public class UpdateCheckService
 
     public async Task RefreshUpdateStatusAsync(ModuleItem module)
     {
-        if (module.Status == ModuleStatus.NotInstalled)
-        {
-            module.UpdateState = UpdateCheckState.Unknown;
-            return;
-        }
-
         var repo = GetRepo(module.Id);
         if (repo == null)
         {
             module.UpdateState = UpdateCheckState.Unknown;
+            module.InstallCheckState = InstallCheckState.Unknown;
+            return;
+        }
+
+        // Modul nije instaliran — nema šta da se "ažurira", umesto toga se proverava koja je
+        // najnovija verzija dostupna za instalaciju iz huba (Setup.exe asset).
+        if (module.Status == ModuleStatus.NotInstalled)
+        {
+            await RefreshInstallStatusAsync(module, repo.Value);
             return;
         }
 
@@ -47,19 +50,14 @@ public class UpdateCheckService
 
         try
         {
-            using var request = new HttpRequestMessage(
-                HttpMethod.Get,
-                $"https://api.github.com/repos/{repo.Value.Owner}/{repo.Value.Repo}/releases/latest");
-
-            using var response = await _http.SendAsync(request);
-            if (!response.IsSuccessStatusCode)
+            var doc = await FetchLatestReleaseAsync(repo.Value);
+            if (doc == null)
             {
                 module.UpdateState = UpdateCheckState.CheckFailed;
                 return;
             }
 
-            using var stream = await response.Content.ReadAsStreamAsync();
-            using var doc = await JsonDocument.ParseAsync(stream);
+            using var _ = doc;
             var tagName = doc.RootElement.TryGetProperty("tag_name", out var tagProp) ? tagProp.GetString() : null;
             var latestVersionText = (tagName ?? string.Empty).TrimStart('v', 'V');
 
@@ -71,7 +69,7 @@ public class UpdateCheckService
             }
 
             module.AvailableVersion = latestVersionText;
-            module.UpdateDownloadUrl = FindFullPackageUrl(doc.RootElement);
+            module.UpdateDownloadUrl = FindAssetUrl(doc.RootElement, "-full.nupkg");
             module.UpdateState = latestVersion > installedVersion
                 ? UpdateCheckState.UpdateAvailable
                 : UpdateCheckState.UpToDate;
@@ -83,9 +81,58 @@ public class UpdateCheckService
         }
     }
 
-    // Traži ...-full.nupkg asset (Velopack pun paket, ne delta) da bi Update.exe apply mogao da ga primeni
-    // bez postojećeg lokalnog baznog paketa.
-    private static string FindFullPackageUrl(JsonElement release)
+    private async Task RefreshInstallStatusAsync(ModuleItem module, (string Owner, string Repo) repo)
+    {
+        module.InstallCheckState = InstallCheckState.Checking;
+
+        try
+        {
+            var doc = await FetchLatestReleaseAsync(repo);
+            if (doc == null)
+            {
+                module.InstallCheckState = InstallCheckState.CheckFailed;
+                return;
+            }
+
+            using var _ = doc;
+            var tagName = doc.RootElement.TryGetProperty("tag_name", out var tagProp) ? tagProp.GetString() : null;
+            var latestVersionText = (tagName ?? string.Empty).TrimStart('v', 'V');
+            var setupUrl = FindAssetUrl(doc.RootElement, "-win-Setup.exe");
+
+            if (string.IsNullOrEmpty(setupUrl))
+            {
+                module.InstallCheckState = InstallCheckState.CheckFailed;
+                return;
+            }
+
+            module.AvailableInstallVersion = latestVersionText;
+            module.InstallDownloadUrl = setupUrl;
+            module.InstallCheckState = InstallCheckState.Available;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Provera dostupne instalacije nije uspela za modul {module.Id}: {ex.Message}");
+            module.InstallCheckState = InstallCheckState.CheckFailed;
+        }
+    }
+
+    private async Task<JsonDocument?> FetchLatestReleaseAsync((string Owner, string Repo) repo)
+    {
+        using var request = new HttpRequestMessage(
+            HttpMethod.Get,
+            $"https://api.github.com/repos/{repo.Owner}/{repo.Repo}/releases/latest");
+
+        using var response = await _http.SendAsync(request);
+        if (!response.IsSuccessStatusCode)
+            return null;
+
+        using var stream = await response.Content.ReadAsStreamAsync();
+        return await JsonDocument.ParseAsync(stream);
+    }
+
+    // Traži asset čije ime se završava datim sufiksom (npr. "-full.nupkg" za Velopack pun paket
+    // koji Update.exe apply može da primeni, ili "-win-Setup.exe" za instalacioni program).
+    private static string FindAssetUrl(JsonElement release, string suffix)
     {
         if (!release.TryGetProperty("assets", out var assets) || assets.ValueKind != JsonValueKind.Array)
             return string.Empty;
@@ -93,7 +140,7 @@ public class UpdateCheckService
         foreach (var asset in assets.EnumerateArray())
         {
             var name = asset.TryGetProperty("name", out var nameProp) ? nameProp.GetString() : null;
-            if (name != null && name.EndsWith("-full.nupkg", StringComparison.OrdinalIgnoreCase))
+            if (name != null && name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
             {
                 return asset.TryGetProperty("browser_download_url", out var urlProp) ? urlProp.GetString() ?? string.Empty : string.Empty;
             }

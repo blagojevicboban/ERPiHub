@@ -114,4 +114,43 @@ public class ModuleUpdateService
             try { File.Delete(packagePath); } catch { }
         }
     }
+
+    // Poziva Update.exe uninstall --silent — isti alat koji je isporučen uz svaku Velopack
+    // instalaciju uklanja prečice, fajlove i registarske unose bez dijaloga.
+    public async Task<ModuleUpdateResult> UninstallAsync(ModuleItem module)
+    {
+        if (!module.HasVelopackInstall || string.IsNullOrEmpty(module.UpdateExePath))
+            return new ModuleUpdateResult { Success = false, Message = "Modul nije prava Velopack instalacija — deinstalacija iz huba nije moguća." };
+
+        if (module.Status == ModuleStatus.Running)
+            return new ModuleUpdateResult { Success = false, Message = "Zatvorite modul pre deinstalacije." };
+
+        try
+        {
+            var psi = new ProcessStartInfo
+            {
+                FileName = module.UpdateExePath,
+                WorkingDirectory = Path.GetDirectoryName(module.UpdateExePath) ?? string.Empty,
+                UseShellExecute = false,
+                CreateNoWindow = true
+            };
+            psi.ArgumentList.Add("uninstall");
+            psi.ArgumentList.Add("--silent");
+
+            using var process = Process.Start(psi);
+            if (process == null)
+                return new ModuleUpdateResult { Success = false, Message = "Update.exe nije mogao da se pokrene." };
+
+            await process.WaitForExitAsync();
+
+            if (process.ExitCode != 0)
+                return new ModuleUpdateResult { Success = false, Message = $"Update.exe je vratio grešku (kod {process.ExitCode})." };
+
+            return new ModuleUpdateResult { Success = true, Message = $"Modul '{module.Title}' je deinstaliran." };
+        }
+        catch (Exception ex)
+        {
+            return new ModuleUpdateResult { Success = false, Message = $"Deinstalacija nije uspela: {ex.Message}" };
+        }
+    }
 }

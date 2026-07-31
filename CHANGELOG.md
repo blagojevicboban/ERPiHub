@@ -3,6 +3,19 @@
 Sve značajne promene i nova izdanja projekta **ErpHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.0.9] - 2026-07-31
+
+### 🚀 Nove Funkcionalnosti & Arhitektura
+- **Integracija preuzimanja i instalacije modula (One-Click Install)**:
+  - Ugrađena nova funkcionalnost za direktno preuzimanje i pokretanje instalacionih paketa modula (`-win-Setup.exe`) ukoliko modul nije instaliran na sistemu.
+  - Implementiran progres bar za prikaz napretka preuzimanja direktno na karticama modula.
+  - Dodat `ModuleInstallService` za preuzimanje paketa sa GitHub-a i automatsko pokretanje instalacije.
+- **Deinstalacija Modula (Silent Uninstall)**:
+  - Dodata mogućnost tihog uklanjanja (deinstalacije) aplikacija putem ugrađenog Velopack alata (`Update.exe uninstall --silent`), čime se aplikacija potpuno briše sa sistema.
+
+### 🐛 Ispravke
+- Usklađeno mapiranje putanja za AccountingApp u `ModuleDiscoveryService`.
+
 ---
 
 ## [1.0.7] - 2026-07-30

@@ -76,6 +76,62 @@
             </Style.Triggers>
         </Style>
 
+        <Style x:Key="InstallButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="#059669"/>
+            <Setter Property="Foreground" Value="White"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="14"/>
+            <Setter Property="Padding" Value="18,10"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="8" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#047857"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Background" Value="#9CA3AF"/>
+                    <Setter Property="Foreground" Value="#E5E7EB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style x:Key="UninstallLinkStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Foreground" Value="#DC2626"/>
+            <Setter Property="FontWeight" Value="SemiBold"/>
+            <Setter Property="FontSize" Value="11.5"/>
+            <Setter Property="Padding" Value="4,6"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Cursor" Value="Hand"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}" CornerRadius="6" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#FEE2E2"/>
+                </Trigger>
+                <Trigger Property="IsEnabled" Value="False">
+                    <Setter Property="Foreground" Value="#D1D5DB"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
         <Style x:Key="SecondaryButtonStyle" TargetType="Button">
             <Setter Property="Background" Value="#E5E7EB"/>
             <Setter Property="Foreground" Value="#374151"/>
@@ -251,7 +307,24 @@
                                                            HorizontalAlignment="Center" Margin="0,4,0,0"/>
                                             </StackPanel>
                                         </StackPanel>
-                                        <Grid>
+
+                                        <!-- Instalacija — prikazuje se umesto Pokreni/Baze reda dok modul nije pronađen na disku -->
+                                        <StackPanel Visibility="{Binding IsNotInstalled, Converter={StaticResource BoolToVis}}" Margin="0,0,0,4">
+                                            <TextBlock Text="{Binding InstallStatusText}" FontSize="11.5" Foreground="#64748B"
+                                                       HorizontalAlignment="Center" Margin="0,0,0,8"/>
+                                            <Button Content="{Binding InstallButtonText}" Tag="{Binding}" Click="BtnInstallModule_Click"
+                                                    IsEnabled="{Binding CanInstallFromHub}"
+                                                    Style="{StaticResource InstallButtonStyle}" HorizontalAlignment="Stretch"
+                                                    ToolTip="Preuzmi i instaliraj modul direktno iz ErpHub-a"/>
+                                            <StackPanel Visibility="{Binding IsInstalling, Converter={StaticResource BoolToVis}}" Margin="0,7,0,0">
+                                                <ProgressBar Value="{Binding InstallProgressPercent, Mode=OneWay}" Maximum="100" Height="7"
+                                                             IsIndeterminate="{Binding InstallIsIndeterminate}" Foreground="#059669"/>
+                                                <TextBlock Text="{Binding InstallProgressLabel}" FontSize="10.5" Foreground="#64748B"
+                                                           HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                            </StackPanel>
+                                        </StackPanel>
+
+                                        <Grid Visibility="{Binding ShowLaunchRow, Converter={StaticResource BoolToVis}}">
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="*"/>
                                                 <ColumnDefinition Width="Auto"/>
@@ -262,6 +335,12 @@
                                             <Button Grid.Column="1" Content="📂 Baze" Tag="{Binding BazeFolderPath}" Click="BtnOpenBazeFolder_Click"
                                                     Style="{StaticResource SecondaryButtonStyle}" ToolTip="Otvori folder sa bazama podataka na disku"/>
                                         </Grid>
+
+                                        <Button Content="{Binding UninstallButtonText}" Tag="{Binding}" Click="BtnUninstallModule_Click"
+                                                Visibility="{Binding HasVelopackInstall, Converter={StaticResource BoolToVis}}"
+                                                IsEnabled="{Binding CanUninstall}"
+                                                Style="{StaticResource UninstallLinkStyle}" HorizontalAlignment="Stretch" Margin="0,4,0,0"
+                                                ToolTip="Ukloni modul sa računara (baze podataka ostaju sačuvane)"/>
                                     </StackPanel>
                                 </Border>
                             </Grid>

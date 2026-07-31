@@ -110,6 +110,12 @@ public class ModuleDiscoveryService
 
         module.ExePath = foundPath;
 
+        // Modul je pronađen na disku — podaci o dostupnoj instalaciji (za NotInstalled karticu)
+        // više nisu relevantni dok se eventualno ne deinstalira.
+        module.InstallCheckState = InstallCheckState.Unknown;
+        module.InstallDownloadUrl = string.Empty;
+        module.AvailableInstallVersion = string.Empty;
+
         // Prava Velopack instalacija ima oblik <RootAppDir>\current\<App>.exe i <RootAppDir>\Update.exe
         // pored sebe — samo tada ErpHub može da pokrene ažuriranje direktno (vidi UpdateService).
         var currentDir = Path.GetDirectoryName(foundPath);
@@ -205,8 +211,7 @@ public class ModuleDiscoveryService
         {
             "Accounting" => new[]
             {
-                Path.Combine(localAppData, "AccountingApp", "Baze"),
-                @"C:\KNJIGE\Radni"
+                Path.Combine(localAppData, "AccountingApp", "Baze")
             },
             "Plata" => new[]
             {

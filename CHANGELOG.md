@@ -3,6 +3,14 @@
 Sve značajne promene i nova izdanja projekta **ErpHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.0.10] - 2026-08-01
+
+### 🚀 Nove funkcionalnosti i Sinhronizacija
+- **Sinhronizacija lansiranja sa AccountingSystem v1.0.44 i SredstvaSystem v1.0.52**:
+  - Usklađena detekcija i podrška za nove devizne module, uvozne kalkulacije, DMS arhivu i Poreski Bilans.
+
+---
+
 ## [1.0.9] - 2026-07-31
 
 ### 🚀 Nove Funkcionalnosti & Arhitektura

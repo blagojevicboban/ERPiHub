@@ -3,6 +3,17 @@
 Sve značajne promene i nova izdanja projekta **ErpHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.0.11] - 2026-08-01
+
+### 🎨 UI / UX i Sinhronizacija Modula
+- **Redizajn Boja i Tematsko Usklađivanje Modula ERPi Zarade (`#5B21B6` / `#7C3AED`)**:
+  - Prilagođene gradijentne boje na kartici modula *ERPi Zarade* u `ModuleDiscoveryService` radi savršene vizuelne usklađenosti sa aplikacijom Zarada.
+- **Sinhronizacija Lansiranja sa novim verzijama ERP modula**:
+  - `AccountingSystem` v1.0.52 (Mesta troška, Blagajna, Putni nalozi, Kompenzacije, Komercijala).
+  - `PlataSistem` v1.1.9 (Redizajnirana vizuelna tema Zarada).
+
+---
+
 ## [1.0.10] - 2026-08-01
 
 ### 🚀 Nove funkcionalnosti i Sinhronizacija

@@ -3,6 +3,14 @@
 Sve značajne promene i nova izdanja projekta **ErpHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.0.14] - 2026-08-01
+
+### 🎨 UI / UX
+- **Bele ikonice na karticama modula i u naslovnoj traci** — ikonice (📘/💼/🏢/⚡) su se renderovale crno i gubile na tamnim/obojenim pozadinama; sada eksplicitno `Foreground="White"`.
+- **ERPi Zarade kartica dodatno zatamnjena/zagasitija** (`#2D1B42` / `#43305F`), usklađeno sa PlataApp v1.1.11.
+
+---
+
 ## [1.0.13] - 2026-08-01
 
 ### 🎨 UI / UX

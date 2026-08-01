@@ -30,8 +30,8 @@ public class ModuleDiscoveryService
                 Subtitle = "Obračun zarada, ugovori o delu i kadrovska evidencija",
                 Description = "Kompletan ERPi modul za obračun zarada, ugovore o delu, PP poslove, kadrovsku evidenciju, platne listiće, XML za Poresku upravu i virmane.",
                 Icon = "💼",
-                HeaderGradientStart = "#4C1D95",
-                HeaderGradientEnd = "#5B21B6"
+                HeaderGradientStart = "#2D1B42",
+                HeaderGradientEnd = "#43305F"
             },
             new ModuleItem
             {

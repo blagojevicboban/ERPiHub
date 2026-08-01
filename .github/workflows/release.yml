@@ -49,7 +49,7 @@ jobs:
               "--packDir", "publish_output",
               "--mainExe", "ErpHub.exe",
               "--outputDir", "ReleasePackage",
-              "--packTitle", "ErpHub",
+              "--packTitle", "ERPi Hub",
               "--packAuthors", "Blagojevic Boban",
               "--icon", "app.ico"
           )

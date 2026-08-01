@@ -16,7 +16,7 @@ if (Test-Path "ReleasePackage") {
     Remove-Item -Recurse -Force "ReleasePackage"
 }
 
-vpk pack --packId "ErpHub" --packVersion "$version" --packDir "publish_output" --mainExe "ErpHub.exe" --outputDir "ReleasePackage" --packTitle "ErpHub" --packAuthors "Blagojevic Boban" --icon "app.ico"
+vpk pack --packId "ErpHub" --packVersion "$version" --packDir "publish_output" --mainExe "ErpHub.exe" --outputDir "ReleasePackage" --packTitle "ERPi Hub" --packAuthors "Blagojevic Boban" --icon "app.ico"
 
 Write-Host "================================================="
 Write-Host "SUCCESS! Installation package created in ReleasePackage\"

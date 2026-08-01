@@ -3,6 +3,15 @@
 Sve značajne promene i nova izdanja projekta **ErpHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.0.12] - 2026-08-01
+
+### 🎨 UI / UX i Brending
+- **Boja kartice ERPi Finansije usklađena sa aplikacijom** (`#0F172A` / `#1E293B`, tamnonavy umesto svetlije plave) — prati stvarnu boju sidebar-a unutar `AccountingApp`.
+- **Boja kartice ERPi Zarade dodatno zatamnjena** (`#4C1D95` / `#5B21B6`) — usklađeno sa novom tamnijom ljubičastom paletom u `PlataApp`.
+- **Prikazani nazivi instaliranih modula ispravljeni** u `--packTitle`: `ErpHub` → **ERPi Hub**, `AccountingSystem` → **ERPi Finansije**, `SredstvaSystem` → **ERPi Sredstva**, `PlataSistem` → **ERPi Zarade** (samo prikazani naziv u Windows meniju/prečicama; `packId` nepromenjen radi kontinuiteta auto-update-a).
+
+---
+
 ## [1.0.11] - 2026-08-01
 
 ### 🎨 UI / UX i Sinhronizacija Modula

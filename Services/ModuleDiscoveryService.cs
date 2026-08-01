@@ -20,8 +20,8 @@ public class ModuleDiscoveryService
                 Subtitle = "Glavna knjiga, robno, materijalno i bilansi",
                 Description = "Kompletan ERPi modul za finansijsko knjigovodstvo, naloze, robno-materijalno poslovanje, kalkulacije, IOS i APR bilanse.",
                 Icon = "📘",
-                HeaderGradientStart = "#1E40AF",
-                HeaderGradientEnd = "#2563EB"
+                HeaderGradientStart = "#0F172A",
+                HeaderGradientEnd = "#1E293B"
             },
             new ModuleItem
             {
@@ -30,8 +30,8 @@ public class ModuleDiscoveryService
                 Subtitle = "Obračun zarada, ugovori o delu i kadrovska evidencija",
                 Description = "Kompletan ERPi modul za obračun zarada, ugovore o delu, PP poslove, kadrovsku evidenciju, platne listiće, XML za Poresku upravu i virmane.",
                 Icon = "💼",
-                HeaderGradientStart = "#5B21B6",
-                HeaderGradientEnd = "#7C3AED"
+                HeaderGradientStart = "#4C1D95",
+                HeaderGradientEnd = "#5B21B6"
             },
             new ModuleItem
             {

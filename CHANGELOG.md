@@ -3,6 +3,13 @@
 Sve značajne promene i nova izdanja projekta **ErpHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.0.13] - 2026-08-01
+
+### 🎨 UI / UX
+- **Zamenjene boje naslovne trake ErpHub-a i kartice ERPi Finansije**: gornja traka ("ERPi Hub — Control Center") sada nosi tamnonavy gradijent (`#0F172A`→`#1E293B`), a kartica ERPi Finansije punu boju (`#1E293B`) — jasnija vizuelna razlika između chrome-a aplikacije i kartice modula.
+
+---
+
 ## [1.0.12] - 2026-08-01
 
 ### 🎨 UI / UX i Brending

@@ -20,7 +20,7 @@ public class ModuleDiscoveryService
                 Subtitle = "Glavna knjiga, robno, materijalno i bilansi",
                 Description = "Kompletan ERPi modul za finansijsko knjigovodstvo, naloze, robno-materijalno poslovanje, kalkulacije, IOS i APR bilanse.",
                 Icon = "📘",
-                HeaderGradientStart = "#0F172A",
+                HeaderGradientStart = "#1E293B",
                 HeaderGradientEnd = "#1E293B"
             },
             new ModuleItem

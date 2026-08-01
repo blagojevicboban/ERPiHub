@@ -165,7 +165,13 @@
         </Grid.RowDefinitions>
 
         <!-- TOP BAR HEADER -->
-        <Border Grid.Row="0" Background="#1E293B" Padding="24,18" Effect="{StaticResource HeaderShadow}">
+        <Border Grid.Row="0" Padding="24,18" Effect="{StaticResource HeaderShadow}">
+            <Border.Background>
+                <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                    <GradientStop Color="#0F172A" Offset="0"/>
+                    <GradientStop Color="#1E293B" Offset="1"/>
+                </LinearGradientBrush>
+            </Border.Background>
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>

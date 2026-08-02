@@ -194,9 +194,14 @@ public class CompanyService
     private static CompanyItem? IzvediIzNazivaFajla(string dbPath, int id)
     {
         var fileName = Path.GetFileNameWithoutExtension(dbPath);
-        if (fileName.Equals("accounting", StringComparison.OrdinalIgnoreCase) ||
-            fileName.Equals("plata", StringComparison.OrdinalIgnoreCase) ||
-            fileName.Equals("sredstva", StringComparison.OrdinalIgnoreCase))
+
+        // Podrazumevane baze koje moduli sami naprave nisu firme. Uz osnovna imena
+        // preskaču se i varijante sa sufiksom `_stara`, koje nastaju kada modul pri
+        // preuzimanju podataka zatekne istoimenu bazu u novom folderu.
+        var tehnickeBaze = new[] { "accounting", "plata", "sredstva" };
+        if (tehnickeBaze.Any(ime =>
+                fileName.Equals(ime, StringComparison.OrdinalIgnoreCase) ||
+                fileName.Equals($"{ime}_stara", StringComparison.OrdinalIgnoreCase)))
         {
             return null;
         }

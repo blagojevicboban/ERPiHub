@@ -3,6 +3,14 @@
 Sve značajne promene i nova izdanja projekta **ERPiHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.1.2] - 2026-08-02
+
+### 🐛 Tehničke baze se ne prikazuju kao firme (`CompanyService`)
+- Uz podrazumevane baze (`accounting`, `plata`, `sredstva`) preskaču se i varijante sa sufiksom `_stara`, koje nastaju kada modul pri preuzimanju podataka zatekne istoimenu bazu u novom folderu. Ranije se takva baza pojavljivala u spisku kao lažna firma („accounting stara").
+
+### 🎨 Ikonice aplikacija u bojama modula
+- `app.ico` sva četiri programa su regenerisane iz originalnih 1024px izvora, svaka u boji svoje kartice — **Hub plava**, **Finansije slate**, **Zarade ljubičasta**, **Sredstva zelena** — sa providnom pozadinom i veličinama do 256px. Ranije su Hub, Finansije i Zarade bili u istoj plavoj, a najveća veličina je bila 64px.
+
 ## [1.1.1] - 2026-08-02
 
 ### 🐛 „Nema baza" posle preimenovanja modula (`ModuleDiscoveryService`, `CompanyService`)

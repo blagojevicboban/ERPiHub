@@ -61,53 +61,66 @@ public class ModuleDiscoveryService
         // Prava Velopack instalacija (ono što korisnik stvarno pokreće i što se auto-ažurira) uvek
         // ima prioritet nad razvojnim bin/Debug kopijama — živi u %LocalAppData%\<PackId>\current\.
         //
-        // Moduli su preimenovani u ERPi* (packId, ime .exe, folderi repozitorijuma). Zbog toga se
-        // ovde traže i stara imena: na mašinama gde je modul instaliran pre preimenovanja instalacija
-        // i dalje stoji pod starim packId-em (%LocalAppData%\AccountingSystem\current\AccountingApp.exe).
-        // Bez ovih fallback putanja hub bi takav modul prikazao kao "nije instaliran".
-        var candidatePaths = module.Id switch
+        // Ime .exe fajla i ime korenskog foldera se pri preimenovanju u ERPi liniju NISU promenili
+        // zajedno: Velopack pri ažuriranju zameni sadržaj `current\` novim imenom .exe fajla, ali
+        // korenski folder ostaje onaj sa kojim je instalacija prvobitno napravljena. Zato na istoj
+        // mašini postoji kombinacija stari koren + novo ime programa
+        // (%LocalAppData%\PlataSistem\current\ERPiZaradeApp.exe) i mora se tražiti svaka kombinacija
+        // poznatih korena i poznatih imena programa — ne samo parovi „staro-staro" i „novo-novo".
+        var (exeNames, rootNames, devPaths) = module.Id switch
         {
-            "Accounting" => new[]
-            {
-                Path.Combine(localAppData, "ERPiFinansije", "current", "ERPiFinansijeApp.exe"),
-                Path.Combine(localAppData, "AccountingSystem", "current", "AccountingApp.exe"),
-                @"C:\ERPi\ERPiFinansije\ERPiFinansijeApp\bin\Debug\net8.0-windows\ERPiFinansijeApp.exe",
-                @"C:\ERPi\ERPiFinansije\publish_output\ERPiFinansijeApp.exe",
-                @"C:\KNJIGE\ERPiFinansije\ERPiFinansijeApp\bin\Debug\net8.0-windows\ERPiFinansijeApp.exe",
-                Path.Combine(localAppData, "ERPiFinansijeApp", "ERPiFinansijeApp.exe"),
-                Path.Combine(localAppData, "AccountingApp", "AccountingApp.exe")
-            },
-            "Plata" => new[]
-            {
-                Path.Combine(localAppData, "ERPiZarade", "current", "ERPiZaradeApp.exe"),
-                Path.Combine(localAppData, "PlataSistem", "current", "PlataApp.exe"),
-                @"C:\ERPi\ERPiZarade\ERPiZaradeApp\bin\Debug\net8.0-windows\ERPiZaradeApp.exe",
-                @"C:\ERPi\ERPiZarade\publish_output\ERPiZaradeApp.exe",
-                @"C:\PLATA\ERPiZarade\ERPiZaradeApp\bin\Debug\net8.0-windows\ERPiZaradeApp.exe",
-                Path.Combine(localAppData, "ERPiZaradeApp", "ERPiZaradeApp.exe"),
-                Path.Combine(localAppData, "PlataApp", "PlataApp.exe")
-            },
-            "Sredstva" => new[]
-            {
-                Path.Combine(localAppData, "ERPiSredstva", "current", "ERPiSredstvaApp.exe"),
-                Path.Combine(localAppData, "SredstvaSystem", "current", "SredstvaApp.exe"),
-                @"C:\ERPi\ERPiSredstva\ERPiSredstvaApp\bin\Debug\net8.0-windows\ERPiSredstvaApp.exe",
-                @"C:\ERPi\ERPiSredstva\publish_output\ERPiSredstvaApp.exe",
-                @"C:\SREDSTVA\ERPiSredstva\ERPiSredstvaApp\bin\Debug\net8.0-windows\ERPiSredstvaApp.exe",
-                Path.Combine(localAppData, "ERPiSredstvaApp", "ERPiSredstvaApp.exe"),
-                Path.Combine(localAppData, "SredstvaApp", "SredstvaApp.exe")
-            },
-            _ => Array.Empty<string>()
+            "Accounting" => (
+                new[] { "ERPiFinansijeApp.exe", "AccountingApp.exe" },
+                new[] { "ERPiFinansije", "AccountingSystem" },
+                new[]
+                {
+                    @"C:\ERPi\ERPiFinansije\ERPiFinansijeApp\bin\Debug\net8.0-windows\ERPiFinansijeApp.exe",
+                    @"C:\ERPi\ERPiFinansije\publish_output\ERPiFinansijeApp.exe",
+                    @"C:\KNJIGE\ERPiFinansije\ERPiFinansijeApp\bin\Debug\net8.0-windows\ERPiFinansijeApp.exe",
+                    Path.Combine(localAppData, "ERPiFinansijeApp", "ERPiFinansijeApp.exe"),
+                    Path.Combine(localAppData, "AccountingApp", "AccountingApp.exe")
+                }),
+            "Plata" => (
+                new[] { "ERPiZaradeApp.exe", "PlataApp.exe" },
+                new[] { "ERPiZarade", "PlataSistem" },
+                new[]
+                {
+                    @"C:\ERPi\ERPiZarade\ERPiZaradeApp\bin\Debug\net8.0-windows\ERPiZaradeApp.exe",
+                    @"C:\ERPi\ERPiZarade\publish_output\ERPiZaradeApp.exe",
+                    @"C:\PLATA\ERPiZarade\ERPiZaradeApp\bin\Debug\net8.0-windows\ERPiZaradeApp.exe",
+                    Path.Combine(localAppData, "ERPiZaradeApp", "ERPiZaradeApp.exe"),
+                    Path.Combine(localAppData, "PlataApp", "PlataApp.exe")
+                }),
+            "Sredstva" => (
+                new[] { "ERPiSredstvaApp.exe", "SredstvaApp.exe" },
+                new[] { "ERPiSredstva", "SredstvaSystem" },
+                new[]
+                {
+                    @"C:\ERPi\ERPiSredstva\ERPiSredstvaApp\bin\Debug\net8.0-windows\ERPiSredstvaApp.exe",
+                    @"C:\ERPi\ERPiSredstva\publish_output\ERPiSredstvaApp.exe",
+                    @"C:\SREDSTVA\ERPiSredstva\ERPiSredstvaApp\bin\Debug\net8.0-windows\ERPiSredstvaApp.exe",
+                    Path.Combine(localAppData, "ERPiSredstvaApp", "ERPiSredstvaApp.exe"),
+                    Path.Combine(localAppData, "SredstvaApp", "SredstvaApp.exe")
+                }),
+            _ => (Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>())
         };
 
-        string foundPath = string.Empty;
-        foreach (var p in candidatePaths)
+        string foundPath;
+        var velopack = NadjiVelopackInstalaciju(localAppData, rootNames, exeNames);
+
+        if (velopack != null)
         {
-            if (File.Exists(p))
-            {
-                foundPath = p;
-                break;
-            }
+            foundPath = velopack.ExePath;
+            module.HasVelopackInstall = true;
+            module.UpdateExePath = velopack.UpdateExePath;
+        }
+        else
+        {
+            // Nema prave instalacije — ostaju razvojne i ručno raspakovane kopije. One se mogu
+            // pokrenuti, ali ne i ažurirati iz huba, jer uz njih ne postoji Update.exe.
+            foundPath = devPaths.FirstOrDefault(File.Exists) ?? string.Empty;
+            module.HasVelopackInstall = false;
+            module.UpdateExePath = string.Empty;
         }
 
         if (string.IsNullOrEmpty(foundPath))
@@ -127,25 +140,6 @@ public class ModuleDiscoveryService
         module.InstallCheckState = InstallCheckState.Unknown;
         module.InstallDownloadUrl = string.Empty;
         module.AvailableInstallVersion = string.Empty;
-
-        // Prava Velopack instalacija ima oblik <RootAppDir>\current\<App>.exe i <RootAppDir>\Update.exe
-        // pored sebe — samo tada ERPiHub može da pokrene ažuriranje direktno (vidi UpdateService).
-        var currentDir = Path.GetDirectoryName(foundPath);
-        var rootAppDir = string.Equals(Path.GetFileName(currentDir), "current", StringComparison.OrdinalIgnoreCase)
-            ? Path.GetDirectoryName(currentDir)
-            : null;
-        var updateExePath = rootAppDir != null ? Path.Combine(rootAppDir, "Update.exe") : string.Empty;
-
-        if (!string.IsNullOrEmpty(updateExePath) && File.Exists(updateExePath))
-        {
-            module.HasVelopackInstall = true;
-            module.UpdateExePath = updateExePath;
-        }
-        else
-        {
-            module.HasVelopackInstall = false;
-            module.UpdateExePath = string.Empty;
-        }
 
         try
         {
@@ -213,6 +207,72 @@ public class ModuleDiscoveryService
         {
             module.BazeFolderPath = string.Empty;
             module.CompanyCountText = "📁 Nema baza";
+        }
+    }
+
+    /// <summary>Pronađena Velopack instalacija: program koji se pokreće i Update.exe koji je ažurira.</summary>
+    private sealed record VelopackNalaz(string ExePath, string UpdateExePath, Version Verzija);
+
+    /// <summary>
+    /// Traži pravu Velopack instalaciju modula — folder koji ima <c>Update.exe</c> i
+    /// <c>current\&lt;program&gt;.exe</c>. Proverava se svaka kombinacija poznatih korenskih
+    /// foldera i poznatih imena programa, jer se pri preimenovanju modula ime programa promeni,
+    /// a korenski folder ostaje onaj iz prvobitne instalacije.
+    /// </summary>
+    private static VelopackNalaz? NadjiVelopackInstalaciju(string localAppData, string[] rootNames, string[] exeNames)
+    {
+        var nalazi = new List<VelopackNalaz>();
+
+        foreach (var root in rootNames)
+        {
+            DodajAkoJeVelopackInstalacija(Path.Combine(localAppData, root), exeNames, nalazi);
+        }
+
+        // Rezervno: instalacija napravljena pod nekim trećim packId-em (npr. posle sledećeg
+        // preimenovanja) i dalje se prepoznaje po Update.exe i poznatom imenu programa u current\,
+        // pa hub ne mora da zna unapred svaki koren koji je ikada postojao.
+        if (nalazi.Count == 0)
+        {
+            IEnumerable<string> folderi;
+            try { folderi = Directory.EnumerateDirectories(localAppData); }
+            catch { folderi = Array.Empty<string>(); }
+
+            foreach (var dir in folderi)
+            {
+                DodajAkoJeVelopackInstalacija(dir, exeNames, nalazi);
+            }
+        }
+
+        // Ako je posle migracije stara instalacija ostala pored nove, ažurira se novija —
+        // inače bi hub ažurirao kopiju koju korisnik više ne pokreće.
+        return nalazi.OrderByDescending(n => n.Verzija).FirstOrDefault();
+    }
+
+    private static void DodajAkoJeVelopackInstalacija(string rootDir, string[] exeNames, List<VelopackNalaz> nalazi)
+    {
+        var updateExePath = Path.Combine(rootDir, "Update.exe");
+        if (!File.Exists(updateExePath)) return;
+
+        foreach (var exeName in exeNames)
+        {
+            var exePath = Path.Combine(rootDir, "current", exeName);
+            if (!File.Exists(exePath)) continue;
+
+            nalazi.Add(new VelopackNalaz(exePath, updateExePath, ProcitajVerziju(exePath)));
+            return;
+        }
+    }
+
+    private static Version ProcitajVerziju(string exePath)
+    {
+        try
+        {
+            var info = FileVersionInfo.GetVersionInfo(exePath);
+            return Version.TryParse(info.FileVersion, out var verzija) ? verzija : new Version(0, 0, 0, 0);
+        }
+        catch
+        {
+            return new Version(0, 0, 0, 0);
         }
     }
 

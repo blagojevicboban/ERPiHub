@@ -3,6 +3,15 @@
 Sve značajne promene i nova izdanja projekta **ERPiHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.1.4] - 2026-08-02
+
+### 🐛 „Dostupno ažuriranje" bez dugmeta za ažuriranje (`ModuleDiscoveryService`)
+- **Modul instaliran pre preimenovanja se ponovo prepoznaje kao prava instalacija.** Velopack pri ažuriranju zameni sadržaj `current\` foldera novim imenom programa, ali korenski folder ostaje onaj sa kojim je instalacija prvobitno napravljena — pa je na disku nastala kombinacija **stari koren + novo ime programa** (`%LocalAppData%\PlataSistem\current\ERPiZaradeApp.exe`). Hub je tražio samo parove „staro-staro" i „novo-novo", nije pogodio nijedan, i padao na razvojnu `bin\Debug` kopiju. Pošto uz nju nema `Update.exe`, `HasVelopackInstall` je bio `false`, pa su **dugmad „⬆ Ažuriraj" i „🗑 Deinstaliraj" ostajala sakrivena** iako je kartica uredno prijavljivala „🟡 Dostupno ažuriranje".
+- **Sada se proverava svaka kombinacija** poznatih korenskih foldera i poznatih imena programa, a instalacija se prepoznaje po tome što uz `current\<program>.exe` postoji i `Update.exe`.
+- **Rezervna pretraga `%LocalAppData%`** hvata instalaciju napravljenu pod bilo kojim drugim `packId`-em, pa sledeće preimenovanje ne može ponovo da sakrije dugme za ažuriranje.
+- **Kada postoje dve instalacije** (stara ostala pored nove), ažurira se ona sa višom verzijom — ranije bi pobedila prva po redosledu u listi, bez obzira na verziju.
+- Prikazana verzija modula je sada verzija koja je stvarno instalirana, a ne verzija zatečene razvojne kopije.
+
 ## [1.1.3] - 2026-08-02
 
 ### 🐛 „Provera nije uspela" kada se potroši GitHub kvota (`UpdateCheckService`)

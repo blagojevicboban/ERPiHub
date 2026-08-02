@@ -3,6 +3,26 @@
 Sve značajne promene i nova izdanja projekta **ErpHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.0.15] - 2026-08-02
+
+### 🏢 Prepoznavanje firmi iz svih modula (`ModuleDiscoveryService`)
+- **Nazivi firmi se sada čitaju i iz Zarada i iz Sredstava.** Upit nad tabelom `Firme` je bio
+  fiksan (`SELECT Sifra, Naziv, Pib, MaticniBroj`) i odgovarao je jedino šemi Finansija —
+  Sredstva nemaju kolonu `Sifra`, a Zarade ni `Sifra` ni `MaticniBroj` (koriste `Mb`). Za ta
+  dva modula je upit pucao, pa se naziv firme izvodio iz imena fajla; otud su se prikazivali
+  kao „AUTO" sa PIB-om „—". Sada se prvo očitava stvarna šema tabele pa se upit sastavlja od
+  kolona koje postoje.
+- Neuspelo čitanje se više ne guta nego se beleži u log, uz jasnu naznaku da se prelazi na
+  izvođenje naziva iz imena fajla.
+- **Uklonjene zastarele putanje pretrage**: za Zarade se više ne pretražuje `C:\ERP\PlataSistem`,
+  za Sredstva `C:\ERP\SredstvaSystem\TestDb`. Baze modula od sada žive isključivo u
+  `%LOCALAPPDATA%\<Modul>App\Baze\`.
+- **Arhivirane kopije (`_stara_`) se ne nude za pokretanje** — nastaju pri preseljenju baza u
+  ERPi Zarade i imaju isti naziv firme kao aktivna baza, pa bi se lako slučajno radilo u zastareloj.
+- Ispravljena putanja do razvojne verzije PlataApp-a nakon spljoštavanja `PlataSistem` repozitorijuma.
+
+---
+
 ## [1.0.14] - 2026-08-01
 
 ### 🎨 UI / UX

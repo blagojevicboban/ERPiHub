@@ -76,7 +76,7 @@ public class UpdateCheckService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Provera ažurnosti nije uspela za modul {module.Id}: {ex.Message}");
+            Serilog.Log.Warning(ex, "Provera ažurnosti nije uspela za modul {Modul}", module.Id);
             module.UpdateState = UpdateCheckState.CheckFailed;
         }
     }
@@ -111,7 +111,7 @@ public class UpdateCheckService
         }
         catch (Exception ex)
         {
-            System.Diagnostics.Debug.WriteLine($"Provera dostupne instalacije nije uspela za modul {module.Id}: {ex.Message}");
+            Serilog.Log.Warning(ex, "Provera dostupne instalacije nije uspela za modul {Modul}", module.Id);
             module.InstallCheckState = InstallCheckState.CheckFailed;
         }
     }

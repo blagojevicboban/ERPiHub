@@ -5,13 +5,40 @@ on:
     branches:
       - main
       - master
+  pull_request:
+    branches:
+      - main
+      - master
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
+  # Kapija kvaliteta: kod mora da se prevede pre nego što se bilo šta objavi.
+  # ErpHub još nema test projekat - kada se doda, ovde ide i "dotnet test".
+  test:
+    runs-on: windows-latest
+    defaults:
+      run:
+        working-directory: .
+
+    steps:
+      - name: Checkout kod
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Prevođenje koda
+        run: dotnet build ErpHub.csproj -c Release
+
   build:
+    needs: test
+    # Na pull request-u se samo prevodi - release se objavljuje tek kad kod uđe u main.
+    if: github.event_name != 'pull_request'
     runs-on: windows-latest
     defaults:
       run:

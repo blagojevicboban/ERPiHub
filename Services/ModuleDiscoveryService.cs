@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using ErpHub.Models;
 using Microsoft.Data.Sqlite;
 
@@ -72,7 +73,7 @@ public class ModuleDiscoveryService
             "Plata" => new[]
             {
                 Path.Combine(localAppData, "PlataSistem", "current", "PlataApp.exe"),
-                @"C:\ERP\PlataSistem\PlataSistem\PlataApp\bin\Debug\net8.0-windows\PlataApp.exe",
+                @"C:\ERP\PlataSistem\PlataApp\bin\Debug\net8.0-windows\PlataApp.exe",
                 @"C:\ERP\PlataSistem\publish_output\PlataApp.exe",
                 @"C:\PLATA\PlataSistem\PlataApp\bin\Debug\net8.0-windows\PlataApp.exe",
                 Path.Combine(localAppData, "PlataApp", "PlataApp.exe")
@@ -179,11 +180,6 @@ public class ModuleDiscoveryService
             _ => string.Empty
         };
 
-        if (!Directory.Exists(bazeDir) && module.Id == "Plata" && File.Exists(@"C:\ERP\PlataSistem\plata.db"))
-        {
-            bazeDir = @"C:\ERP\PlataSistem";
-        }
-
         if (Directory.Exists(bazeDir))
         {
             module.BazeFolderPath = bazeDir;
@@ -213,15 +209,16 @@ public class ModuleDiscoveryService
             {
                 Path.Combine(localAppData, "AccountingApp", "Baze")
             },
+            // Svaki modul drži baze isključivo u svom %LOCALAPPDATA%\<App>\Baze folderu.
+            // Ranije su ovde bile i putanje do izvornog koda (C:\ERP\...), odakle su se
+            // baze i zatekle na pogrešnom mestu; sada su preseljene i te putanje su uklonjene.
             "Plata" => new[]
             {
-                Path.Combine(localAppData, "PlataApp", "Baze"),
-                @"C:\ERP\PlataSistem"
+                Path.Combine(localAppData, "PlataApp", "Baze")
             },
             "Sredstva" => new[]
             {
-                Path.Combine(localAppData, "SredstvaApp", "Baze"),
-                @"C:\ERP\SredstvaSystem\TestDb"
+                Path.Combine(localAppData, "SredstvaApp", "Baze")
             },
             _ => Array.Empty<string>()
         };
@@ -237,7 +234,11 @@ public class ModuleDiscoveryService
             {
                 if (dbPath.Contains("_temp", StringComparison.OrdinalIgnoreCase) ||
                     dbPath.Contains("backup", StringComparison.OrdinalIgnoreCase) ||
-                    dbPath.Contains("RezervneKopije", StringComparison.OrdinalIgnoreCase))
+                    dbPath.Contains("RezervneKopije", StringComparison.OrdinalIgnoreCase) ||
+                    // Arhivirane kopije zatečene pri preseljenju baza. Ostaju na disku radi
+                    // poređenja, ali se ne nude za pokretanje — pod istim su nazivom firme
+                    // kao aktivna baza, pa bi se lako slučajno radilo u zastareloj.
+                    dbPath.Contains("_stara_", StringComparison.OrdinalIgnoreCase))
                 {
                     continue;
                 }
@@ -269,16 +270,42 @@ public class ModuleDiscoveryService
             using var conn = new SqliteConnection(cs);
             conn.Open();
 
+            // Tabela Firme nema istu šemu u sva tri modula:
+            //   Finansije : Sifra, Naziv, Pib, MaticniBroj
+            //   Sredstva  : Naziv, PIB, MaticniBroj   (bez Sifra)
+            //   Zarade    : Naziv, Pib, Mb            (bez Sifra i MaticniBroj)
+            // Zato se prvo čita stvarna šema, pa se upit sastavlja od kolona koje postoje.
+            // Ranije je fiksni upit uspevao samo nad Finansijama, a za Sredstva i Zarade
+            // je pucao pa se naziv firme izvodio iz imena fajla (otud "AUTO" i PIB "—").
+            var kolone = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            using (var pragma = conn.CreateCommand())
+            {
+                pragma.CommandText = "PRAGMA table_info(Firme);";
+                using var pr = pragma.ExecuteReader();
+                while (pr.Read()) kolone.Add(pr.GetString(1));
+            }
+
+            if (kolone.Count == 0) return IzvediIzNazivaFajla(dbPath, id);
+
+            string? Kolona(params string[] kandidati) =>
+                kandidati.FirstOrDefault(k => kolone.Contains(k));
+
+            static string Izraz(string? kolona) => kolona == null ? "''" : $"[{kolona}]";
+
             using var cmd = conn.CreateCommand();
-            cmd.CommandText = "SELECT Sifra, Naziv, Pib, MaticniBroj FROM Firme LIMIT 1;";
+            cmd.CommandText =
+                $"SELECT {Izraz(Kolona("Sifra"))}, {Izraz(Kolona("Naziv"))}, " +
+                $"{Izraz(Kolona("Pib", "PIB"))}, {Izraz(Kolona("MaticniBroj", "Mb"))} FROM Firme LIMIT 1;";
 
             using var reader = cmd.ExecuteReader();
             if (reader.Read())
             {
-                var sifra = reader.IsDBNull(0) ? "" : reader.GetString(0);
-                var naziv = reader.IsDBNull(1) ? "" : reader.GetString(1);
-                var pib = reader.IsDBNull(2) ? "" : reader.GetString(2);
-                var maticni = reader.IsDBNull(3) ? "" : reader.GetString(3);
+                string Citaj(int i) => reader.IsDBNull(i) ? "" : reader.GetValue(i)?.ToString() ?? "";
+
+                var sifra = Citaj(0);
+                var naziv = Citaj(1);
+                var pib = Citaj(2);
+                var maticni = Citaj(3);
 
                 if (!string.IsNullOrWhiteSpace(naziv))
                 {
@@ -294,11 +321,20 @@ public class ModuleDiscoveryService
                 }
             }
         }
-        catch
+        catch (Exception ex)
         {
-            // Ignoriši ako nema tabele Firme
+            Serilog.Log.Warning(ex, "Podaci o firmi nisu pročitani iz {Baza} — naziv se izvodi iz imena fajla", dbPath);
         }
 
+        return IzvediIzNazivaFajla(dbPath, id);
+    }
+
+    /// <summary>
+    /// Rezervni način: naziv firme se izvodi iz imena fajla kada tabela Firme
+    /// ne postoji ili je prazna.
+    /// </summary>
+    private static CompanyItem? IzvediIzNazivaFajla(string dbPath, int id)
+    {
         var fileName = Path.GetFileNameWithoutExtension(dbPath);
         if (fileName.Equals("accounting", StringComparison.OrdinalIgnoreCase) ||
             fileName.Equals("plata", StringComparison.OrdinalIgnoreCase) ||

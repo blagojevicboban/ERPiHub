@@ -3,6 +3,13 @@
 Sve značajne promene i nova izdanja projekta **ERPiHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.1.3] - 2026-08-02
+
+### 🐛 „Provera nije uspela" kada se potroši GitHub kvota (`UpdateCheckService`)
+- **Odgovori GitHub-a se pamte 10 minuta.** GitHub dozvoljava 60 neautorizovanih poziva na sat po IP adresi, a svako „Osveži status" trošilo je tri (po jedan za svaki modul). Nekoliko osvežavanja zaredom obaralo je proveru za ceo sat. Sada se u tom prozoru koristi zapamćen odgovor.
+- **Potrošena kvota se prepoznaje i poručuje jasno**: umesto „❔ Provera nije uspela" prikazuje se „⏳ GitHub ograničenje — probajte posle HH:mm", sa stvarnim vremenom obnavljanja iz zaglavlja `x-ratelimit-reset`. Prava greška (npr. nema mreže) i dalje daje staru poruku.
+- **Kada je kvota potrošena, koristi se i stariji zapamćen odgovor** — bolje prikazati podatak od pre pola sata nego nikakav.
+
 ## [1.1.2] - 2026-08-02
 
 ### 🐛 Tehničke baze se ne prikazuju kao firme (`CompanyService`)

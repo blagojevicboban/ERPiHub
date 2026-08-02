@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
@@ -10,6 +12,18 @@ namespace ERPiHub.Services;
 public class UpdateCheckService
 {
     private static readonly HttpClient _http = CreateClient();
+
+    /// <summary>
+    /// Odgovor GitHub-a se pamti nakratko. Bez toga svako „Osveži status" troši tri poziva
+    /// od 60 koliko GitHub dozvoljava neautorizovano po IP adresi na sat, pa nekoliko
+    /// osvežavanja zaredom obori proveru za ceo sat.
+    /// </summary>
+    private static readonly Dictionary<string, (DateTime Vreme, string Json)> _kes = new();
+
+    private static readonly TimeSpan _trajanjeKesa = TimeSpan.FromMinutes(10);
+
+    /// <summary>Kada se GitHub kvota obnavlja; postavlja se tek kada se na nju naiđe.</summary>
+    private static DateTime? _kvotaDo;
 
     private static HttpClient CreateClient()
     {
@@ -50,10 +64,11 @@ public class UpdateCheckService
 
         try
         {
-            var doc = await FetchLatestReleaseAsync(repo.Value);
+            var (doc, ograniceno) = await FetchLatestReleaseAsync(repo.Value);
             if (doc == null)
             {
-                module.UpdateState = UpdateCheckState.CheckFailed;
+                if (ograniceno) ZabeleziOgranicenje(module);
+                module.UpdateState = ograniceno ? UpdateCheckState.RateLimited : UpdateCheckState.CheckFailed;
                 return;
             }
 
@@ -87,10 +102,11 @@ public class UpdateCheckService
 
         try
         {
-            var doc = await FetchLatestReleaseAsync(repo);
+            var (doc, ograniceno) = await FetchLatestReleaseAsync(repo);
             if (doc == null)
             {
-                module.InstallCheckState = InstallCheckState.CheckFailed;
+                if (ograniceno) ZabeleziOgranicenje(module);
+                module.InstallCheckState = ograniceno ? InstallCheckState.RateLimited : InstallCheckState.CheckFailed;
                 return;
             }
 
@@ -116,18 +132,85 @@ public class UpdateCheckService
         }
     }
 
-    private async Task<JsonDocument?> FetchLatestReleaseAsync((string Owner, string Repo) repo)
+    private async Task<(JsonDocument? Doc, bool Ograniceno)> FetchLatestReleaseAsync((string Owner, string Repo) repo)
     {
+        var kljuc = $"{repo.Owner}/{repo.Repo}";
+
+        lock (_kes)
+        {
+            if (_kes.TryGetValue(kljuc, out var zapamceno) &&
+                DateTime.UtcNow - zapamceno.Vreme < _trajanjeKesa)
+            {
+                return (JsonDocument.Parse(zapamceno.Json), false);
+            }
+        }
+
         using var request = new HttpRequestMessage(
             HttpMethod.Get,
             $"https://api.github.com/repos/{repo.Owner}/{repo.Repo}/releases/latest");
 
         using var response = await _http.SendAsync(request);
-        if (!response.IsSuccessStatusCode)
-            return null;
 
-        using var stream = await response.Content.ReadAsStreamAsync();
-        return await JsonDocument.ParseAsync(stream);
+        if (!response.IsSuccessStatusCode)
+        {
+            if (JePotrosenaKvota(response))
+            {
+                // Kad je kvota potrošena, zapamćeni odgovor je bolji od nikakvog —
+                // makar i stariji od deset minuta.
+                lock (_kes)
+                {
+                    if (_kes.TryGetValue(kljuc, out var zapamceno))
+                    {
+                        return (JsonDocument.Parse(zapamceno.Json), false);
+                    }
+                }
+
+                return (null, true);
+            }
+
+            return (null, false);
+        }
+
+        var json = await response.Content.ReadAsStringAsync();
+
+        lock (_kes)
+        {
+            _kes[kljuc] = (DateTime.UtcNow, json);
+        }
+
+        return (JsonDocument.Parse(json), false);
+    }
+
+    /// <summary>
+    /// GitHub na potrošenu kvotu vraća 403/429 sa zaglavljem `x-ratelimit-remaining: 0`
+    /// i vremenom obnavljanja u `x-ratelimit-reset` (Unix sekunde).
+    /// </summary>
+    private static bool JePotrosenaKvota(HttpResponseMessage response)
+    {
+        if (response.StatusCode != System.Net.HttpStatusCode.Forbidden &&
+            response.StatusCode != System.Net.HttpStatusCode.TooManyRequests)
+        {
+            return false;
+        }
+
+        if (!response.Headers.TryGetValues("x-ratelimit-remaining", out var preostalo) ||
+            preostalo.FirstOrDefault() != "0")
+        {
+            return false;
+        }
+
+        if (response.Headers.TryGetValues("x-ratelimit-reset", out var reset) &&
+            long.TryParse(reset.FirstOrDefault(), out var sekunde))
+        {
+            _kvotaDo = DateTimeOffset.FromUnixTimeSeconds(sekunde).LocalDateTime;
+        }
+
+        return true;
+    }
+
+    private static void ZabeleziOgranicenje(ModuleItem module)
+    {
+        module.RateLimitResetText = _kvotaDo.HasValue ? _kvotaDo.Value.ToString("HH:mm") : string.Empty;
     }
 
     // Traži asset čije ime se završava datim sufiksom (npr. "-full.nupkg" za Velopack pun paket

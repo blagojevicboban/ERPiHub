@@ -18,7 +18,10 @@ public enum UpdateCheckState
     Checking,
     UpToDate,
     UpdateAvailable,
-    CheckFailed
+    CheckFailed,
+    // GitHub dozvoljava 60 neautorizovanih poziva na sat po IP adresi. Kada se kvota
+    // potroši, provera nije "pukla" — samo treba sačekati, pa se to i poručuje korisniku.
+    RateLimited
 }
 
 public enum InstallCheckState
@@ -26,7 +29,8 @@ public enum InstallCheckState
     Unknown,
     Checking,
     Available,
-    CheckFailed
+    CheckFailed,
+    RateLimited
 }
 
 public class ModuleItem : INotifyPropertyChanged
@@ -36,6 +40,7 @@ public class ModuleItem : INotifyPropertyChanged
     private string _installedVersion = "1.0.0";
     private string _availableVersion = string.Empty;
     private UpdateCheckState _updateState = UpdateCheckState.Unknown;
+    private string _rateLimitResetText = string.Empty;
     private DateTime? _lastLaunched;
     private string _companyCountText = "📁 0 baza firmi";
     private string _bazeFolderPath = string.Empty;
@@ -94,6 +99,13 @@ public class ModuleItem : INotifyPropertyChanged
     {
         get => _updateState;
         set { if (_updateState != value) { _updateState = value; OnPropertyChanged(); OnPropertyChanged(nameof(UpdateStatusText)); OnPropertyChanged(nameof(CanUpdateFromHub)); OnPropertyChanged(nameof(ShowUpdateArea)); } }
+    }
+
+    /// <summary>Vreme (HH:mm) kada se GitHub kvota obnavlja — prikazuje se uz poruku o ograničenju.</summary>
+    public string RateLimitResetText
+    {
+        get => _rateLimitResetText;
+        set { if (_rateLimitResetText != value) { _rateLimitResetText = value; OnPropertyChanged(); OnPropertyChanged(nameof(UpdateStatusText)); } }
     }
 
     // Postavlja ModuleDiscoveryService kada pronađeni exe leži u pravoj Velopack "current\" instalaciji
@@ -285,6 +297,9 @@ public class ModuleItem : INotifyPropertyChanged
         UpdateCheckState.UpToDate => "✅ Ažurna verzija",
         UpdateCheckState.UpdateAvailable => $"🟡 Dostupno ažuriranje (v{AvailableVersion})",
         UpdateCheckState.CheckFailed => "❔ Provera nije uspela",
+        UpdateCheckState.RateLimited => string.IsNullOrEmpty(RateLimitResetText)
+            ? "⏳ GitHub ograničenje — probajte kasnije"
+            : $"⏳ GitHub ograničenje — probajte posle {RateLimitResetText}",
         _ => "—"
     };
 

@@ -68,11 +68,19 @@ public class CompanyService
         var result = new List<CompanyItem>();
         var seenPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
+        var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+
+        // Uz nove ERPi foldere traže se i oni pod starim imenima aplikacija: modul svoje
+        // baze preuzima u novi folder tek pri prvom pokretanju verzije iz ERPi linije, a do
+        // tada podaci stoje na starom mestu. Posle preuzimanja stari folderi ostaju prazni.
         var searchDirectories = new[]
         {
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ERPiFinansijeApp", "Baze"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ERPiZaradeApp", "Baze"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ERPiSredstvaApp", "Baze"),
+            Path.Combine(localAppData, "ERPiFinansijeApp", "Baze"),
+            Path.Combine(localAppData, "ERPiZaradeApp", "Baze"),
+            Path.Combine(localAppData, "ERPiSredstvaApp", "Baze"),
+            Path.Combine(localAppData, "AccountingApp", "Baze"),
+            Path.Combine(localAppData, "PlataApp", "Baze"),
+            Path.Combine(localAppData, "SredstvaApp", "Baze"),
             @"C:\KNJIGE\Radni",
             @"C:\ERPi\ERPiFinansije"
         };

@@ -3,6 +3,12 @@
 Sve značajne promene i nova izdanja projekta **ERPiHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.1.1] - 2026-08-02
+
+### 🐛 „Nema baza" posle preimenovanja modula (`ModuleDiscoveryService`, `CompanyService`)
+- **Baze se traže i u folderima pod starim imenima modula** (`AccountingApp`, `PlataApp`, `SredstvaApp`), a ne samo u novim `ERPi*App` folderima. Modul svoje podatke preuzima u novi folder tek pri prvom pokretanju verzije iz ERPi linije, pa je hub do tada prikazivao „Nema baza" i prazan spisak firmi iako baze postoje na disku.
+- **Dugme „📂 Baze"** vodi u folder u kojem baze stvarno jesu — u stari dok modul ne preuzme podatke, potom u novi.
+
 ## [1.1.0] - 2026-08-02
 
 ### 🏷️ Preimenovanje modula u ERPi liniju

@@ -182,12 +182,20 @@ public class ModuleDiscoveryService
             module.SelectedCompany = module.Companies[0];
         }
 
-        // 2. Izračunavanje statistike baza za modul
+        // 2. Izračunavanje statistike baza za modul.
+        // Dugme „Baze" vodi u folder u kojem baze stvarno jesu — dok modul ne preuzme
+        // podatke iz foldera pod starim imenom, to je još uvek stari folder.
         var bazeDir = module.Id switch
         {
-            "Accounting" => Path.Combine(localAppData, "ERPiFinansijeApp", "Baze"),
-            "Plata" => Path.Combine(localAppData, "ERPiZaradeApp", "Baze"),
-            "Sredstva" => Path.Combine(localAppData, "ERPiSredstvaApp", "Baze"),
+            "Accounting" => PrviFolderSaBazama(
+                Path.Combine(localAppData, "ERPiFinansijeApp", "Baze"),
+                Path.Combine(localAppData, "AccountingApp", "Baze")),
+            "Plata" => PrviFolderSaBazama(
+                Path.Combine(localAppData, "ERPiZaradeApp", "Baze"),
+                Path.Combine(localAppData, "PlataApp", "Baze")),
+            "Sredstva" => PrviFolderSaBazama(
+                Path.Combine(localAppData, "ERPiSredstvaApp", "Baze"),
+                Path.Combine(localAppData, "SredstvaApp", "Baze")),
             _ => string.Empty
         };
 
@@ -208,28 +216,50 @@ public class ModuleDiscoveryService
         }
     }
 
+    /// <summary>
+    /// Vraća prvi od zadatih foldera koji sadrži bar jednu bazu; ako nijedan nema baze,
+    /// vraća prvi (novi) folder, jer se tu baze i očekuju.
+    /// </summary>
+    private static string PrviFolderSaBazama(params string[] kandidati)
+    {
+        foreach (var dir in kandidati)
+        {
+            if (Directory.Exists(dir) && Directory.GetFiles(dir, "*.db").Length > 0) return dir;
+        }
+
+        return kandidati.Length > 0 ? kandidati[0] : string.Empty;
+    }
+
     public List<CompanyItem> DiscoverCompaniesForModule(string moduleId)
     {
         var result = new List<CompanyItem>();
         var seenPaths = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         var localAppData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 
+        // Svaki modul drži baze isključivo u svom %LOCALAPPDATA%\<App>\Baze folderu.
+        // Ranije su ovde bile i putanje do izvornog koda (C:\ERPi\...), odakle su se
+        // baze i zatekle na pogrešnom mestu; sada su preseljene i te putanje su uklonjene.
+        //
+        // Uz novi folder traži se i onaj pod starim imenom aplikacije: preimenovanje u ERPi
+        // liniju promenilo je ime foldera sa podacima, a modul svoje baze preuzima tek pri
+        // prvom pokretanju nove verzije. Do tada bi hub prikazivao „Nema baza" iako baze
+        // postoje. Posle preuzimanja stari folder ostaje prazan, pa nema dupliranja.
         var searchDirectories = moduleId switch
         {
             "Accounting" => new[]
             {
-                Path.Combine(localAppData, "ERPiFinansijeApp", "Baze")
+                Path.Combine(localAppData, "ERPiFinansijeApp", "Baze"),
+                Path.Combine(localAppData, "AccountingApp", "Baze")
             },
-            // Svaki modul drži baze isključivo u svom %LOCALAPPDATA%\<App>\Baze folderu.
-            // Ranije su ovde bile i putanje do izvornog koda (C:\ERPi\...), odakle su se
-            // baze i zatekle na pogrešnom mestu; sada su preseljene i te putanje su uklonjene.
             "Plata" => new[]
             {
-                Path.Combine(localAppData, "ERPiZaradeApp", "Baze")
+                Path.Combine(localAppData, "ERPiZaradeApp", "Baze"),
+                Path.Combine(localAppData, "PlataApp", "Baze")
             },
             "Sredstva" => new[]
             {
-                Path.Combine(localAppData, "ERPiSredstvaApp", "Baze")
+                Path.Combine(localAppData, "ERPiSredstvaApp", "Baze"),
+                Path.Combine(localAppData, "SredstvaApp", "Baze")
             },
             _ => Array.Empty<string>()
         };

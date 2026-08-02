@@ -2,9 +2,9 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Windows;
-using ErpHub.Models;
+using ERPiHub.Models;
 
-namespace ErpHub.Services;
+namespace ERPiHub.Services;
 
 public class ModuleLauncherService
 {

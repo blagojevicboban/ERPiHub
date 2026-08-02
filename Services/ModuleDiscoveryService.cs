@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using ErpHub.Models;
+using ERPiHub.Models;
 using Microsoft.Data.Sqlite;
 
-namespace ErpHub.Services;
+namespace ERPiHub.Services;
 
 public class ModuleDiscoveryService
 {
@@ -60,30 +60,41 @@ public class ModuleDiscoveryService
 
         // Prava Velopack instalacija (ono što korisnik stvarno pokreće i što se auto-ažurira) uvek
         // ima prioritet nad razvojnim bin/Debug kopijama — živi u %LocalAppData%\<PackId>\current\.
+        //
+        // Moduli su preimenovani u ERPi* (packId, ime .exe, folderi repozitorijuma). Zbog toga se
+        // ovde traže i stara imena: na mašinama gde je modul instaliran pre preimenovanja instalacija
+        // i dalje stoji pod starim packId-em (%LocalAppData%\AccountingSystem\current\AccountingApp.exe).
+        // Bez ovih fallback putanja hub bi takav modul prikazao kao "nije instaliran".
         var candidatePaths = module.Id switch
         {
             "Accounting" => new[]
             {
+                Path.Combine(localAppData, "ERPiFinansije", "current", "ERPiFinansijeApp.exe"),
                 Path.Combine(localAppData, "AccountingSystem", "current", "AccountingApp.exe"),
-                @"C:\ERP\AccountingSystem\AccountingApp\bin\Debug\net8.0-windows\AccountingApp.exe",
-                @"C:\ERP\AccountingSystem\publish_output\AccountingApp.exe",
-                @"C:\KNJIGE\AccountingSystem\AccountingApp\bin\Debug\net8.0-windows\AccountingApp.exe",
+                @"C:\ERPi\ERPiFinansije\ERPiFinansijeApp\bin\Debug\net8.0-windows\ERPiFinansijeApp.exe",
+                @"C:\ERPi\ERPiFinansije\publish_output\ERPiFinansijeApp.exe",
+                @"C:\KNJIGE\ERPiFinansije\ERPiFinansijeApp\bin\Debug\net8.0-windows\ERPiFinansijeApp.exe",
+                Path.Combine(localAppData, "ERPiFinansijeApp", "ERPiFinansijeApp.exe"),
                 Path.Combine(localAppData, "AccountingApp", "AccountingApp.exe")
             },
             "Plata" => new[]
             {
+                Path.Combine(localAppData, "ERPiZarade", "current", "ERPiZaradeApp.exe"),
                 Path.Combine(localAppData, "PlataSistem", "current", "PlataApp.exe"),
-                @"C:\ERP\PlataSistem\PlataApp\bin\Debug\net8.0-windows\PlataApp.exe",
-                @"C:\ERP\PlataSistem\publish_output\PlataApp.exe",
-                @"C:\PLATA\PlataSistem\PlataApp\bin\Debug\net8.0-windows\PlataApp.exe",
+                @"C:\ERPi\ERPiZarade\ERPiZaradeApp\bin\Debug\net8.0-windows\ERPiZaradeApp.exe",
+                @"C:\ERPi\ERPiZarade\publish_output\ERPiZaradeApp.exe",
+                @"C:\PLATA\ERPiZarade\ERPiZaradeApp\bin\Debug\net8.0-windows\ERPiZaradeApp.exe",
+                Path.Combine(localAppData, "ERPiZaradeApp", "ERPiZaradeApp.exe"),
                 Path.Combine(localAppData, "PlataApp", "PlataApp.exe")
             },
             "Sredstva" => new[]
             {
+                Path.Combine(localAppData, "ERPiSredstva", "current", "ERPiSredstvaApp.exe"),
                 Path.Combine(localAppData, "SredstvaSystem", "current", "SredstvaApp.exe"),
-                @"C:\ERP\SredstvaSystem\SredstvaApp\bin\Debug\net8.0-windows\SredstvaApp.exe",
-                @"C:\ERP\SredstvaSystem\publish_output\SredstvaApp.exe",
-                @"C:\SREDSTVA\SredstvaSystem\SredstvaApp\bin\Debug\net8.0-windows\SredstvaApp.exe",
+                @"C:\ERPi\ERPiSredstva\ERPiSredstvaApp\bin\Debug\net8.0-windows\ERPiSredstvaApp.exe",
+                @"C:\ERPi\ERPiSredstva\publish_output\ERPiSredstvaApp.exe",
+                @"C:\SREDSTVA\ERPiSredstva\ERPiSredstvaApp\bin\Debug\net8.0-windows\ERPiSredstvaApp.exe",
+                Path.Combine(localAppData, "ERPiSredstvaApp", "ERPiSredstvaApp.exe"),
                 Path.Combine(localAppData, "SredstvaApp", "SredstvaApp.exe")
             },
             _ => Array.Empty<string>()
@@ -118,7 +129,7 @@ public class ModuleDiscoveryService
         module.AvailableInstallVersion = string.Empty;
 
         // Prava Velopack instalacija ima oblik <RootAppDir>\current\<App>.exe i <RootAppDir>\Update.exe
-        // pored sebe — samo tada ErpHub može da pokrene ažuriranje direktno (vidi UpdateService).
+        // pored sebe — samo tada ERPiHub može da pokrene ažuriranje direktno (vidi UpdateService).
         var currentDir = Path.GetDirectoryName(foundPath);
         var rootAppDir = string.Equals(Path.GetFileName(currentDir), "current", StringComparison.OrdinalIgnoreCase)
             ? Path.GetDirectoryName(currentDir)
@@ -174,9 +185,9 @@ public class ModuleDiscoveryService
         // 2. Izračunavanje statistike baza za modul
         var bazeDir = module.Id switch
         {
-            "Accounting" => Path.Combine(localAppData, "AccountingApp", "Baze"),
-            "Plata" => Path.Combine(localAppData, "PlataApp", "Baze"),
-            "Sredstva" => Path.Combine(localAppData, "SredstvaApp", "Baze"),
+            "Accounting" => Path.Combine(localAppData, "ERPiFinansijeApp", "Baze"),
+            "Plata" => Path.Combine(localAppData, "ERPiZaradeApp", "Baze"),
+            "Sredstva" => Path.Combine(localAppData, "ERPiSredstvaApp", "Baze"),
             _ => string.Empty
         };
 
@@ -207,18 +218,18 @@ public class ModuleDiscoveryService
         {
             "Accounting" => new[]
             {
-                Path.Combine(localAppData, "AccountingApp", "Baze")
+                Path.Combine(localAppData, "ERPiFinansijeApp", "Baze")
             },
             // Svaki modul drži baze isključivo u svom %LOCALAPPDATA%\<App>\Baze folderu.
-            // Ranije su ovde bile i putanje do izvornog koda (C:\ERP\...), odakle su se
+            // Ranije su ovde bile i putanje do izvornog koda (C:\ERPi\...), odakle su se
             // baze i zatekle na pogrešnom mestu; sada su preseljene i te putanje su uklonjene.
             "Plata" => new[]
             {
-                Path.Combine(localAppData, "PlataApp", "Baze")
+                Path.Combine(localAppData, "ERPiZaradeApp", "Baze")
             },
             "Sredstva" => new[]
             {
-                Path.Combine(localAppData, "SredstvaApp", "Baze")
+                Path.Combine(localAppData, "ERPiSredstvaApp", "Baze")
             },
             _ => Array.Empty<string>()
         };

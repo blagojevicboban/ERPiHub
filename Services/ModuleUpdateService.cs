@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using ErpHub.Models;
+using ERPiHub.Models;
 
-namespace ErpHub.Services;
+namespace ERPiHub.Services;
 
 public class ModuleUpdateResult
 {
@@ -36,7 +36,7 @@ public class ModuleUpdateService
         string packagePath;
         try
         {
-            var tempDir = Path.Combine(Path.GetTempPath(), "ErpHub-updates");
+            var tempDir = Path.Combine(Path.GetTempPath(), "ERPiHub-updates");
             Directory.CreateDirectory(tempDir);
             packagePath = Path.Combine(tempDir, $"{module.Id}-{module.AvailableVersion}.nupkg");
 

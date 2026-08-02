@@ -1,11 +1,11 @@
-# 🚀 ErpHub — Poslovni Sistem Control Center
+# 🚀 ERPiHub — Poslovni Sistem Control Center
 
 ![Version](https://img.shields.io/badge/version-1.0.1-blue.svg)
 ![NET](https://img.shields.io/badge/.NET-8.0--windows-purple.svg)
 ![UI](https://img.shields.io/badge/UI-WPF%20%7C%20Modern%20Design-success.svg)
 ![Updater](https://img.shields.io/badge/Auto--Update-Velopack-orange.svg)
 
-**ErpHub** je centralna upravljačka aplikacija (Control Center / Launcher) celokupnog ERP poslovnog sistema. Omogućava brzu navigaciju, nadzor radnog statusa modula u realnom vremenu, upravljanje preduzećima i sinhronizovano lansiranje poslovnih aplikacija sa prosleđivanjem konteksta aktivne baze podataka.
+**ERPiHub** je centralna upravljačka aplikacija (Control Center / Launcher) celokupnog ERP poslovnog sistema. Omogućava brzu navigaciju, nadzor radnog statusa modula u realnom vremenu, upravljanje preduzećima i sinhronizovano lansiranje poslovnih aplikacija sa prosleđivanjem konteksta aktivne baze podataka.
 
 ---
 
@@ -15,21 +15,21 @@ ERP sistem je koncipiran kao modularni poslovni paket sastavljen od centralnog h
 
 ```
                           ┌────────────────────────┐
-                          │   🚀 ErpHub (v1.0.0)   │
+                          │   🚀 ERPiHub (v1.0.0)   │
                           │     Control Center     │
                           └───────────┬────────────┘
                                       │
            ┌──────────────────────────┼──────────────────────────┐
            ▼                          ▼                          ▼
 ┌──────────────────────┐   ┌──────────────────────┐   ┌──────────────────────┐
-│ 📘 AccountingSystem  │   │   💼 PlataSistem     │   │  🏢 SredstvaSystem   │
+│ 📘 ERPiFinansije  │   │   💼 ERPiZarade     │   │  🏢 ERPiSredstva   │
 │ Finansije & Magacin  │   │   Obračun Zarada     │   │   Osnovna Sredstva   │
 └──────────────────────┘   └──────────────────────┘   └──────────────────────┘
 ```
 
 ---
 
-## 🌟 Ključne Funkcionalnosti ErpHub-a
+## 🌟 Ključne Funkcionalnosti ERPiHub-a
 
 1. **Centralni Launcher & Autodetekcija Modula:**
    - Automatski skenira lokacije modula u `Debug`, `publish_output` i `%LOCALAPPDATA%` direktorijumima.
@@ -63,19 +63,19 @@ ERP sistem je koncipiran kao modularni poslovni paket sastavljen od centralnog h
 
 ### Pokretanje iz VS Code-a
 Pritisnite **`F5`** ili otvorite **Run and Debug** panel i izaberite:
-- **`ErpHub (Debug)`** — pokreće samo ERP Hub.
+- **`ERPiHub (Debug)`** — pokreće samo ERP Hub.
 - **`Pokreni sve 4 aplikacije`** — lansira ERP Hub i sva 3 modula u jednoj operaciji.
 
 ### Kompajliranje putem CLI-ja
 ```bash
-dotnet build ErpHub.csproj
+dotnet build ERPiHub.csproj
 ```
 
 ### Pravljenje Instalacionog Paketa (Velopack Setup)
 ```powershell
 .\publish.ps1
 ```
-Skripta kreira instalacioni paket u direktorijumu `ReleasePackage\ErpHub-1.0.0-win-x64-Setup.exe`.
+Skripta kreira instalacioni paket u direktorijumu `ReleasePackage\ERPiHub-1.0.0-win-x64-Setup.exe`.
 
 ---
 
@@ -90,7 +90,7 @@ Konfiguracioni fajl se nalazi u direktorijumu aplikacije i definiše spisak pred
     "Sifra": "F001",
     "Naziv": "ARHSTO d.o.o.",
     "Pib": "100000001",
-    "DbPath": "C:\\KNJIGE\\AccountingSystem\\baza.db"
+    "DbPath": "C:\\KNJIGE\\ERPiFinansije\\baza.db"
   }
 ]
 ```

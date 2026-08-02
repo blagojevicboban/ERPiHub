@@ -4,12 +4,12 @@ using System.Reflection;
 using System.Windows;
 using Serilog;
 
-namespace ErpHub;
+namespace ERPiHub;
 
 /// <summary>
 /// Centralno logovanje aplikacije.
 ///
-/// Zapisi idu u %LOCALAPPDATA%\AccountingApp\logs\log-GGGGMMDD.txt, novi fajl svakog dana,
+/// Zapisi idu u %LOCALAPPDATA%\ERPiFinansijeApp\logs\log-GGGGMMDD.txt, novi fajl svakog dana,
 /// zadržava se poslednjih 14 dana. Zamenjuje ranije ručno dopisivanje u crash.log
 /// (koji je rastao bez ograničenja) i Debug.WriteLine pozive koji su u Release
 /// verziji potpuno nevidljivi — zbog čega se do sada nijedan problem kod korisnika
@@ -17,7 +17,7 @@ namespace ErpHub;
 /// </summary>
 public static class AppLog
 {
-    private const string AppName = "ErpHub";
+    private const string AppName = "ERPiHub";
 
     public static string LogFolder { get; } = Path.Combine(
         Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),

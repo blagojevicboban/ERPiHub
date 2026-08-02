@@ -1,7 +1,7 @@
 using System.Windows;
 using Velopack;
 
-namespace ErpHub;
+namespace ERPiHub;
 
 /// <summary>
 /// Interaction logic for App.xaml

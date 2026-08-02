@@ -3,7 +3,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
-namespace ErpHub.Models;
+namespace ERPiHub.Models;
 
 public enum ModuleStatus
 {

@@ -6,7 +6,7 @@
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
-    <Product>ErpHub</Product>
+    <Product>ERPiHub</Product>
     <Authors>Blagojević Boban</Authors>
     <Company>Blagojević Boban</Company>
     <ApplicationIcon>app.ico</ApplicationIcon>

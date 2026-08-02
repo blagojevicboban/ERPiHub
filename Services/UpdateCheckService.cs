@@ -3,9 +3,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text.Json;
 using System.Threading.Tasks;
-using ErpHub.Models;
+using ERPiHub.Models;
 
-namespace ErpHub.Services;
+namespace ERPiHub.Services;
 
 public class UpdateCheckService
 {
@@ -14,7 +14,7 @@ public class UpdateCheckService
     private static HttpClient CreateClient()
     {
         var client = new HttpClient { Timeout = TimeSpan.FromSeconds(8) };
-        client.DefaultRequestHeaders.UserAgent.ParseAdd("ErpHub-UpdateCheck");
+        client.DefaultRequestHeaders.UserAgent.ParseAdd("ERPiHub-UpdateCheck");
         client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/vnd.github+json"));
         return client;
     }
@@ -22,9 +22,9 @@ public class UpdateCheckService
     // Repo za svaki modul mora biti javan (GitHub API za releases/latest ovde ne šalje token).
     private static (string Owner, string Repo)? GetRepo(string moduleId) => moduleId switch
     {
-        "Accounting" => ("blagojevicboban", "AccountingSystem"),
-        "Plata" => ("blagojevicboban", "PayrollSystem"),
-        "Sredstva" => ("blagojevicboban", "AssetManager"),
+        "Accounting" => ("blagojevicboban", "ERPiFinansije"),
+        "Plata" => ("blagojevicboban", "ERPiZarade"),
+        "Sredstva" => ("blagojevicboban", "ERPiSredstva"),
         _ => null
     };
 

@@ -1,7 +1,16 @@
-# 📋 CHANGELOG — ErpHub
+# 📋 CHANGELOG — ERPiHub
 
-Sve značajne promene i nova izdanja projekta **ErpHub** biće dokumentovane u ovom fajlu.
+Sve značajne promene i nova izdanja projekta **ERPiHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
+
+## [1.1.0] - 2026-08-02
+
+### 🏷️ Preimenovanje modula u ERPi liniju
+- **Prepoznavanje preimenovanih modula (`ModuleDiscoveryService`)**: moduli se sada traže pod novim imenima
+  (`ERPiFinansije`/`ERPiFinansijeApp.exe`, `ERPiZarade`/`ERPiZaradeApp.exe`, `ERPiSredstva`/`ERPiSredstvaApp.exe`),
+  uz zadržane putanje starih instalacija (`AccountingSystem`, `PlataSistem`, `SredstvaSystem`) — modul instaliran
+  pre preimenovanja se i dalje vidi kao instaliran i može da se pokrene.
+- Ažurirane razvojne (`bin\Debug`) putanje na novi radni folder `C:\ERPi\...`.
 
 ## [1.0.15] - 2026-08-02
 
@@ -14,12 +23,12 @@ Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) s
   kolona koje postoje.
 - Neuspelo čitanje se više ne guta nego se beleži u log, uz jasnu naznaku da se prelazi na
   izvođenje naziva iz imena fajla.
-- **Uklonjene zastarele putanje pretrage**: za Zarade se više ne pretražuje `C:\ERP\PlataSistem`,
-  za Sredstva `C:\ERP\SredstvaSystem\TestDb`. Baze modula od sada žive isključivo u
+- **Uklonjene zastarele putanje pretrage**: za Zarade se više ne pretražuje `C:\ERPi\ERPiZarade`,
+  za Sredstva `C:\ERPi\ERPiSredstva\TestDb`. Baze modula od sada žive isključivo u
   `%LOCALAPPDATA%\<Modul>App\Baze\`.
 - **Arhivirane kopije (`_stara_`) se ne nude za pokretanje** — nastaju pri preseljenju baza u
   ERPi Zarade i imaju isti naziv firme kao aktivna baza, pa bi se lako slučajno radilo u zastareloj.
-- Ispravljena putanja do razvojne verzije PlataApp-a nakon spljoštavanja `PlataSistem` repozitorijuma.
+- Ispravljena putanja do razvojne verzije ERPiZaradeApp-a nakon spljoštavanja `ERPiZarade` repozitorijuma.
 
 ---
 
@@ -27,23 +36,23 @@ Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) s
 
 ### 🎨 UI / UX
 - **Bele ikonice na karticama modula i u naslovnoj traci** — ikonice (📘/💼/🏢/⚡) su se renderovale crno i gubile na tamnim/obojenim pozadinama; sada eksplicitno `Foreground="White"`.
-- **ERPi Zarade kartica dodatno zatamnjena/zagasitija** (`#2D1B42` / `#43305F`), usklađeno sa PlataApp v1.1.11.
+- **ERPi Zarade kartica dodatno zatamnjena/zagasitija** (`#2D1B42` / `#43305F`), usklađeno sa ERPiZaradeApp v1.1.11.
 
 ---
 
 ## [1.0.13] - 2026-08-01
 
 ### 🎨 UI / UX
-- **Zamenjene boje naslovne trake ErpHub-a i kartice ERPi Finansije**: gornja traka ("ERPi Hub — Control Center") sada nosi tamnonavy gradijent (`#0F172A`→`#1E293B`), a kartica ERPi Finansije punu boju (`#1E293B`) — jasnija vizuelna razlika između chrome-a aplikacije i kartice modula.
+- **Zamenjene boje naslovne trake ERPiHub-a i kartice ERPi Finansije**: gornja traka ("ERPi Hub — Control Center") sada nosi tamnonavy gradijent (`#0F172A`→`#1E293B`), a kartica ERPi Finansije punu boju (`#1E293B`) — jasnija vizuelna razlika između chrome-a aplikacije i kartice modula.
 
 ---
 
 ## [1.0.12] - 2026-08-01
 
 ### 🎨 UI / UX i Brending
-- **Boja kartice ERPi Finansije usklađena sa aplikacijom** (`#0F172A` / `#1E293B`, tamnonavy umesto svetlije plave) — prati stvarnu boju sidebar-a unutar `AccountingApp`.
-- **Boja kartice ERPi Zarade dodatno zatamnjena** (`#4C1D95` / `#5B21B6`) — usklađeno sa novom tamnijom ljubičastom paletom u `PlataApp`.
-- **Prikazani nazivi instaliranih modula ispravljeni** u `--packTitle`: `ErpHub` → **ERPi Hub**, `AccountingSystem` → **ERPi Finansije**, `SredstvaSystem` → **ERPi Sredstva**, `PlataSistem` → **ERPi Zarade** (samo prikazani naziv u Windows meniju/prečicama; `packId` nepromenjen radi kontinuiteta auto-update-a).
+- **Boja kartice ERPi Finansije usklađena sa aplikacijom** (`#0F172A` / `#1E293B`, tamnonavy umesto svetlije plave) — prati stvarnu boju sidebar-a unutar `ERPiFinansijeApp`.
+- **Boja kartice ERPi Zarade dodatno zatamnjena** (`#4C1D95` / `#5B21B6`) — usklađeno sa novom tamnijom ljubičastom paletom u `ERPiZaradeApp`.
+- **Prikazani nazivi instaliranih modula ispravljeni** u `--packTitle`: `ERPiHub` → **ERPi Hub**, `ERPiFinansije` → **ERPi Finansije**, `ERPiSredstva` → **ERPi Sredstva**, `ERPiZarade` → **ERPi Zarade** (samo prikazani naziv u Windows meniju/prečicama; `packId` nepromenjen radi kontinuiteta auto-update-a).
 
 ---
 
@@ -53,15 +62,15 @@ Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) s
 - **Redizajn Boja i Tematsko Usklađivanje Modula ERPi Zarade (`#5B21B6` / `#7C3AED`)**:
   - Prilagođene gradijentne boje na kartici modula *ERPi Zarade* u `ModuleDiscoveryService` radi savršene vizuelne usklađenosti sa aplikacijom Zarada.
 - **Sinhronizacija Lansiranja sa novim verzijama ERP modula**:
-  - `AccountingSystem` v1.0.52 (Mesta troška, Blagajna, Putni nalozi, Kompenzacije, Komercijala).
-  - `PlataSistem` v1.1.9 (Redizajnirana vizuelna tema Zarada).
+  - `ERPiFinansije` v1.0.52 (Mesta troška, Blagajna, Putni nalozi, Kompenzacije, Komercijala).
+  - `ERPiZarade` v1.1.9 (Redizajnirana vizuelna tema Zarada).
 
 ---
 
 ## [1.0.10] - 2026-08-01
 
 ### 🚀 Nove funkcionalnosti i Sinhronizacija
-- **Sinhronizacija lansiranja sa AccountingSystem v1.0.44 i SredstvaSystem v1.0.52**:
+- **Sinhronizacija lansiranja sa ERPiFinansije v1.0.44 i ERPiSredstva v1.0.52**:
   - Usklađena detekcija i podrška za nove devizne module, uvozne kalkulacije, DMS arhivu i Poreski Bilans.
 
 ---
@@ -77,7 +86,7 @@ Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) s
   - Dodata mogućnost tihog uklanjanja (deinstalacije) aplikacija putem ugrađenog Velopack alata (`Update.exe uninstall --silent`), čime se aplikacija potpuno briše sa sistema.
 
 ### 🐛 Ispravke
-- Usklađeno mapiranje putanja za AccountingApp u `ModuleDiscoveryService`.
+- Usklađeno mapiranje putanja za ERPiFinansijeApp u `ModuleDiscoveryService`.
 
 ---
 
@@ -93,9 +102,9 @@ Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) s
 
 ### 🎨 UI / UX i Usklađivanje Boja
 - **Usklađene boje kartica sa aplikacijama**: Gradijenti na karticama modula ažurirani tako da tačno odgovaraju primarnim i akcentnim bojama svake aplikacije pojedinačno:
-  - **Finansije (`AccountingApp`)**: `#1E40AF → #2563EB` (plava paleta)
-  - **Plata (`PlataApp`)**: `#1A237E → #3949AB` (indigo paleta)
-  - **Sredstva (`SredstvaApp`)**: `#1B4332 → #2D6A4F` (zelena paleta)
+  - **Finansije (`ERPiFinansijeApp`)**: `#1E40AF → #2563EB` (plava paleta)
+  - **Plata (`ERPiZaradeApp`)**: `#1A237E → #3949AB` (indigo paleta)
+  - **Sredstva (`ERPiSredstvaApp`)**: `#1B4332 → #2D6A4F` (zelena paleta)
 
 ---
 
@@ -108,7 +117,7 @@ Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) s
 - **Prečica za Otvaranje Foldera sa Bazama:** Dodato dugme `📂 Baze` na dnu svake kartice koje jednim klikom otvara folder sa `.db` fajlovima u Windows Explorer-u.
 
 ### 🎨 Dizajn i Ikonica
-- **Moderna 3D Aplikativna Ikonica (`app.ico`):** Ugrađena brendirana ikonica za `ErpHub.exe` i Velopack `Setup.exe` instalacioni paket.
+- **Moderna 3D Aplikativna Ikonica (`app.ico`):** Ugrađena brendirana ikonica za `ERPiHub.exe` i Velopack `Setup.exe` instalacioni paket.
 
 ### ⚡ Performanse i Stabilnost
 - **Instant Praćenje Izlaska Procesa:** Poboljšan `Process.Exited` slušalac i `INotifyPropertyChanged` u modelu radi trenutačnog reagovanja pri zatvaranju modula.
@@ -124,7 +133,7 @@ Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) s
 - **Real-Time Praćenje Statusa Modula:** Implementiran `Process.Exited` slušalac i `DispatcherTimer` (3s) za automatsko osvežavanje stanja radnih procesa (Instaliran / Pokrenut / Nije pronađen) bez potrebe za ručnim osvežavanjem.
 - **Velopack Auto-Update Integracija:** Ugrađena podrška za automatsko ažuriranje sa GitHub-a uz pop-up dijalog (`UpdateDialog.xaml`) za preuzimanje i restart.
 - **Jedinstveni Izvor Istine za Verziju:** Konfigurisano automatsko čitanje verzije iz `version.txt` direktno u MSBuild sklopu.
-- **CI/CD & Release Pipeline:** Napravljeni [.github/workflows/release.yml](file:///.github/workflows/release.yml) i [publish.ps1](file:///publish.ps1) skripta za kreiranje `ErpHub-1.0.0-win-x64-Setup.exe` instalacionog paketa.
+- **CI/CD & Release Pipeline:** Napravljeni [.github/workflows/release.yml](file:///.github/workflows/release.yml) i [publish.ps1](file:///publish.ps1) skripta za kreiranje `ERPiHub-1.0.0-win-x64-Setup.exe` instalacionog paketa.
 
 ### 🎨 UI / UX i Odzivnost
 - Kartice modula u uniformnoj mreži sa gradijentnim zaglavljima, emotikon ikonama i jasnim statusnim bedževima (`🟢 Pokrenut`, `🔵 Instaliran`, `⚪ Nije pronađen`).

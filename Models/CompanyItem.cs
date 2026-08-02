@@ -1,4 +1,4 @@
-namespace ErpHub.Models;
+namespace ERPiHub.Models;
 
 public class CompanyItem
 {

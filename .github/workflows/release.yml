@@ -1,4 +1,4 @@
-name: Release ErpHub
+name: Release ERPiHub
 
 on:
   push:
@@ -16,7 +16,7 @@ permissions:
 
 jobs:
   # Kapija kvaliteta: kod mora da se prevede pre nego što se bilo šta objavi.
-  # ErpHub još nema test projekat - kada se doda, ovde ide i "dotnet test".
+  # ERPiHub još nema test projekat - kada se doda, ovde ide i "dotnet test".
   test:
     runs-on: windows-latest
     defaults:
@@ -33,7 +33,7 @@ jobs:
           dotnet-version: '8.0.x'
 
       - name: Prevođenje koda
-        run: dotnet build ErpHub.csproj -c Release
+        run: dotnet build ERPiHub.csproj -c Release
 
   build:
     needs: test
@@ -62,7 +62,7 @@ jobs:
 
       - name: Prevođenje koda (dotnet publish)
         run: |
-          dotnet publish ErpHub.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true -p:IncludeNativeLibrariesForSelfExtract=true -p:Version=$env:VERSION -o publish_output
+          dotnet publish ERPiHub.csproj -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -p:PublishReadyToRun=true -p:IncludeNativeLibrariesForSelfExtract=true -p:Version=$env:VERSION -o publish_output
 
       - name: Instalacija Velopack CLI
         run: dotnet tool install -g vpk
@@ -71,10 +71,10 @@ jobs:
         run: |
           $vpkArgs = @(
               "pack",
-              "--packId", "ErpHub",
+              "--packId", "ERPiHub",
               "--packVersion", $env:VERSION,
               "--packDir", "publish_output",
-              "--mainExe", "ErpHub.exe",
+              "--mainExe", "ERPiHub.exe",
               "--outputDir", "ReleasePackage",
               "--packTitle", "ERPi Hub",
               "--packAuthors", "Blagojevic Boban",

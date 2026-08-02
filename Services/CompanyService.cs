@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text.Json;
-using ErpHub.Models;
+using ERPiHub.Models;
 using Microsoft.Data.Sqlite;
 
-namespace ErpHub.Services;
+namespace ERPiHub.Services;
 
 public class CompanyService
 {
@@ -15,7 +15,7 @@ public class CompanyService
     public CompanyService()
     {
         var appData = Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-        var dir = Path.Combine(appData, "ErpHub");
+        var dir = Path.Combine(appData, "ERPiHub");
         Directory.CreateDirectory(dir);
         _configFilePath = Path.Combine(dir, "companies.json");
     }
@@ -55,7 +55,7 @@ public class CompanyService
                 Naziv = "ARHIBEL d.o.o. Pirot",
                 Pib = "100000001",
                 MaticniBroj = "07123456",
-                DbPath = @"C:\ERP\AccountingSystem\AccountingApp\bin\Debug\net8.0-windows\accounting.db"
+                DbPath = @"C:\ERPi\ERPiFinansije\ERPiFinansijeApp\bin\Debug\net8.0-windows\accounting.db"
             }
         };
 
@@ -70,11 +70,11 @@ public class CompanyService
 
         var searchDirectories = new[]
         {
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "AccountingApp", "Baze"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "PlataApp", "Baze"),
-            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "SredstvaApp", "Baze"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ERPiFinansijeApp", "Baze"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ERPiZaradeApp", "Baze"),
+            Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "ERPiSredstvaApp", "Baze"),
             @"C:\KNJIGE\Radni",
-            @"C:\ERP\AccountingSystem"
+            @"C:\ERPi\ERPiFinansije"
         };
 
         int idCounter = 1;

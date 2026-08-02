@@ -1,4 +1,4 @@
-<Window x:Class="ErpHub.UpdateDialog"
+<Window x:Class="ERPiHub.UpdateDialog"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="Ažuriranje ERP Hub-a"

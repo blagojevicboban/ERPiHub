@@ -3,10 +3,10 @@ using System.Collections.ObjectModel;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
-using ErpHub.Models;
-using ErpHub.Services;
+using ERPiHub.Models;
+using ERPiHub.Services;
 
-namespace ErpHub;
+namespace ERPiHub;
 
 public partial class MainWindow : Window
 {
@@ -53,7 +53,7 @@ public partial class MainWindow : Window
         try
         {
             var source = new Velopack.Sources.GithubSource(
-                "https://github.com/blagojevicboban/ErpHub",
+                "https://github.com/blagojevicboban/ERPiHub",
                 null,
                 false);
             var mgr = new Velopack.UpdateManager(source);

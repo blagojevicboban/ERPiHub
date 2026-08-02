@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using Velopack;
 
-namespace ErpHub;
+namespace ERPiHub;
 
 public partial class UpdateDialog : Window
 {

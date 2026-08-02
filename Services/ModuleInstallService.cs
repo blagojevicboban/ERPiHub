@@ -3,9 +3,9 @@ using System.Diagnostics;
 using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
-using ErpHub.Models;
+using ERPiHub.Models;
 
-namespace ErpHub.Services;
+namespace ERPiHub.Services;
 
 public class ModuleInstallResult
 {
@@ -32,7 +32,7 @@ public class ModuleInstallService
         string setupPath;
         try
         {
-            var tempDir = Path.Combine(Path.GetTempPath(), "ErpHub-installs");
+            var tempDir = Path.Combine(Path.GetTempPath(), "ERPiHub-installs");
             Directory.CreateDirectory(tempDir);
             setupPath = Path.Combine(tempDir, $"{module.Id}-{module.AvailableInstallVersion}-Setup.exe");
 

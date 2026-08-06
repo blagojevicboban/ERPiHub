@@ -34,11 +34,17 @@ public class UpdateCheckService
     }
 
     // Repo za svaki modul mora biti javan (GitHub API za releases/latest ovde ne šalje token).
-    private static (string Owner, string Repo)? GetRepo(string moduleId) => moduleId switch
+    // AssetPrefix je Velopack packId + "-": asseti se filtriraju i po prefiksu, ne samo sufiksu,
+    // jer ERPi repo objavljuje DVA pakovanja u istom release-u (packId "ERPi" za win-x64 i
+    // "ERPi32" za win-x86) — bez prefiksa bi sufiks "-full.nupkg" pogodio oba i izbor bio slučajan.
+    private static (string Owner, string Repo, string AssetPrefix)? GetRepo(string moduleId) => moduleId switch
     {
-        "Accounting" => ("blagojevicboban", "ERPiFinansije"),
-        "Plata" => ("blagojevicboban", "ERPiZarade"),
-        "Sredstva" => ("blagojevicboban", "ERPiSredstva"),
+        "Accounting" => ("blagojevicboban", "ERPiFinansije", "ERPiFinansije-"),
+        "Plata" => ("blagojevicboban", "ERPiZarade", "ERPiZarade-"),
+        "Sredstva" => ("blagojevicboban", "ERPiSredstva", "ERPiSredstva-"),
+        // Hub prati samo 64-bit (win-x64) pakovanje — ono koje devPaths/rootNames u
+        // ModuleDiscoveryService očekuju kao "pravu" instalaciju objedinjenog sistema.
+        "ERPi" => ("blagojevicboban", "ERPi", "ERPi-"),
         _ => null
     };
 
@@ -64,7 +70,7 @@ public class UpdateCheckService
 
         try
         {
-            var (doc, ograniceno) = await FetchLatestReleaseAsync(repo.Value);
+            var (doc, ograniceno) = await FetchLatestReleaseAsync((repo.Value.Owner, repo.Value.Repo));
             if (doc == null)
             {
                 if (ograniceno) ZabeleziOgranicenje(module);
@@ -84,7 +90,7 @@ public class UpdateCheckService
             }
 
             module.AvailableVersion = latestVersionText;
-            module.UpdateDownloadUrl = FindAssetUrl(doc.RootElement, "-full.nupkg");
+            module.UpdateDownloadUrl = FindAssetUrl(doc.RootElement, "-full.nupkg", repo.Value.AssetPrefix);
             module.UpdateState = latestVersion > installedVersion
                 ? UpdateCheckState.UpdateAvailable
                 : UpdateCheckState.UpToDate;
@@ -96,13 +102,13 @@ public class UpdateCheckService
         }
     }
 
-    private async Task RefreshInstallStatusAsync(ModuleItem module, (string Owner, string Repo) repo)
+    private async Task RefreshInstallStatusAsync(ModuleItem module, (string Owner, string Repo, string AssetPrefix) repo)
     {
         module.InstallCheckState = InstallCheckState.Checking;
 
         try
         {
-            var (doc, ograniceno) = await FetchLatestReleaseAsync(repo);
+            var (doc, ograniceno) = await FetchLatestReleaseAsync((repo.Owner, repo.Repo));
             if (doc == null)
             {
                 if (ograniceno) ZabeleziOgranicenje(module);
@@ -113,7 +119,9 @@ public class UpdateCheckService
             using var _ = doc;
             var tagName = doc.RootElement.TryGetProperty("tag_name", out var tagProp) ? tagProp.GetString() : null;
             var latestVersionText = (tagName ?? string.Empty).TrimStart('v', 'V');
-            var setupUrl = FindAssetUrl(doc.RootElement, "-win-Setup.exe");
+            // Sufiks je samo "Setup.exe" (bez "-win-" ispred) jer višearhitekturna pakovanja
+            // (win-x64/win-x86) ubacuju naziv arhitekture pre njega — npr. "ERPi-win-x64-Setup.exe".
+            var setupUrl = FindAssetUrl(doc.RootElement, "Setup.exe", repo.AssetPrefix);
 
             if (string.IsNullOrEmpty(setupUrl))
             {
@@ -213,9 +221,11 @@ public class UpdateCheckService
         module.RateLimitResetText = _kvotaDo.HasValue ? _kvotaDo.Value.ToString("HH:mm") : string.Empty;
     }
 
-    // Traži asset čije ime se završava datim sufiksom (npr. "-full.nupkg" za Velopack pun paket
-    // koji Update.exe apply može da primeni, ili "-win-Setup.exe" za instalacioni program).
-    private static string FindAssetUrl(JsonElement release, string suffix)
+    // Traži asset čije ime počinje datim packId prefiksom i završava se datim sufiksom
+    // (npr. "-full.nupkg" za Velopack pun paket koji Update.exe apply može da primeni, ili
+    // "Setup.exe" za instalacioni program). Prefiks je neophodan kad isti release nosi više
+    // pakovanja (npr. "ERPi-" i "ERPi32-") — bez njega bi sufiks sam pogodio bilo koje od njih.
+    private static string FindAssetUrl(JsonElement release, string suffix, string prefix)
     {
         if (!release.TryGetProperty("assets", out var assets) || assets.ValueKind != JsonValueKind.Array)
             return string.Empty;
@@ -223,7 +233,9 @@ public class UpdateCheckService
         foreach (var asset in assets.EnumerateArray())
         {
             var name = asset.TryGetProperty("name", out var nameProp) ? nameProp.GetString() : null;
-            if (name != null && name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
+            if (name != null &&
+                name.StartsWith(prefix, StringComparison.OrdinalIgnoreCase) &&
+                name.EndsWith(suffix, StringComparison.OrdinalIgnoreCase))
             {
                 return asset.TryGetProperty("browser_download_url", out var urlProp) ? urlProp.GetString() ?? string.Empty : string.Empty;
             }

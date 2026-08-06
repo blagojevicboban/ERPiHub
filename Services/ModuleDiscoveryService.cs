@@ -43,6 +43,16 @@ public class ModuleDiscoveryService
                 Icon = "🏢",
                 HeaderGradientStart = "#1B4332",
                 HeaderGradientEnd = "#2D6A4F"
+            },
+            new ModuleItem
+            {
+                Id = "ERPi",
+                Title = "ERPi",
+                Subtitle = "Objedinjeni sistem — Finansije, Zarade i Sredstva",
+                Description = "Jedinstveni ERPi modul koji objedinjuje finansijsko knjigovodstvo, obračun zarada i evidenciju osnovnih sredstava u jednu bazu i aplikaciju.",
+                Icon = "⚡",
+                HeaderGradientStart = "#7C2D12",
+                HeaderGradientEnd = "#B45309"
             }
         };
 
@@ -101,6 +111,17 @@ public class ModuleDiscoveryService
                     @"C:\SREDSTVA\ERPiSredstva\ERPiSredstvaApp\bin\Debug\net8.0-windows\ERPiSredstvaApp.exe",
                     Path.Combine(localAppData, "ERPiSredstvaApp", "ERPiSredstvaApp.exe"),
                     Path.Combine(localAppData, "SredstvaApp", "SredstvaApp.exe")
+                }),
+            // Objedinjeni sistem — Velopack packId je "ERPi" (vpk pack --packId "ERPi" u release.yml),
+            // pa instalacija živi u %LocalAppData%\ERPi\current\ERPiApp.exe.
+            "ERPi" => (
+                new[] { "ERPiApp.exe" },
+                new[] { "ERPi" },
+                new[]
+                {
+                    @"C:\ERPi\ERPi\ERPiApp\bin\Debug\net8.0-windows\ERPiApp.exe",
+                    @"C:\ERPi\ERPi\publish_output_x64\ERPiApp.exe",
+                    Path.Combine(localAppData, "ERPiApp", "ERPiApp.exe")
                 }),
             _ => (Array.Empty<string>(), Array.Empty<string>(), Array.Empty<string>())
         };
@@ -190,6 +211,8 @@ public class ModuleDiscoveryService
             "Sredstva" => PrviFolderSaBazama(
                 Path.Combine(localAppData, "ERPiSredstvaApp", "Baze"),
                 Path.Combine(localAppData, "SredstvaApp", "Baze")),
+            "ERPi" => PrviFolderSaBazama(
+                Path.Combine(localAppData, "ERPiApp", "Baze")),
             _ => string.Empty
         };
 
@@ -320,6 +343,10 @@ public class ModuleDiscoveryService
             {
                 Path.Combine(localAppData, "ERPiSredstvaApp", "Baze"),
                 Path.Combine(localAppData, "SredstvaApp", "Baze")
+            },
+            "ERPi" => new[]
+            {
+                Path.Combine(localAppData, "ERPiApp", "Baze")
             },
             _ => Array.Empty<string>()
         };

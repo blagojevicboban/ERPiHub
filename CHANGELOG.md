@@ -3,6 +3,21 @@
 Sve značajne promene i nova izdanja projekta **ERPiHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.1.6] - 2026-08-06
+
+### 🎨 Istaknuta veća kartica za ERPi, tri kompaktne pored nje
+- Raspored kartica menjan iz ravnomerne mreže 2×2 (4 iste kartice) u dvokolonski: **ERPi** dobija veću, istaknutu karticu levo (veći header, ikonica, naslov, pun opis), dok Finansije/Zarade/Sredstva idu u kompaktnije kartice u koloni desno (manji header bez podnaslova, bez opisa, skraćen spisak statusa, dugmad manja i „Baze"/„Deinstaliraj" postaju ikonice sa ToolTip-om umesto teksta).
+- `MainWindow.xaml.cs` sada deli module na `FeaturedModuleControl` (jedan, ERPi) i `ModuleItemsControl` (preostala tri) — oba i dalje referenciraju iste `ModuleItem` instance iz `Modules`, pa osvežavanje statusa/ažurnosti radi identično kao ranije za sve module.
+
+## [1.1.5] - 2026-08-06
+
+### ✨ Dodat modul „ERPi" (objedinjeni sistem)
+- Hub sada prepoznaje i pokreće objedinjeni **ERPi** modul (Finansije + Zarade + Sredstva u jednoj aplikaciji, repo `blagojevicboban/ERPi`), pored postojeća tri modula. Prava instalacija se traži pod Velopack packId-em `ERPi` (`%LocalAppData%\ERPi\current\ERPiApp.exe`), a razvojna kopija pod `C:\ERPi\ERPi\ERPiApp\bin\Debug\...`.
+
+### 🐛 Provera ažuriranja pogađala je pogrešno pakovanje kad release nosi više varijanti (`UpdateCheckService`)
+- Repo `ERPi` objavljuje u istom release-u **dva** Velopack pakovanja — 64-bit (`packId "ERPi"`) i 32-bit (`packId "ERPi32"`). Dotadašnje traženje asseta samo po sufiksu (`-full.nupkg`) pogodilo bi nasumično jedno od dva pakovanja, pa je ažuriranje iz huba moglo da primeni pogrešnu arhitekturu. Traženje instalacionog `Setup.exe` je uz to pretpostavljalo fiksni sufiks `-win-Setup.exe`, koji višearhitekturna pakovanja ne koriste (stvarni naziv je npr. `ERPi-win-x64-Setup.exe`), pa provera dostupne instalacije nikad ne bi uspela.
+- Traženje asseta sada filtrira i po **packId prefiksu**, ne samo po sufiksu — za `ERPi` modul hub prati isključivo 64-bit (`ERPi-...`) pakovanje. Ispravka je primenjena i na postojeća tri modula (prefiksi `ERPiFinansije-`, `ERPiZarade-`, `ERPiSredstva-`) bez promene ponašanja, jer je za njih prefiks uvek bio jedinstven.
+
 ## [1.1.4] - 2026-08-02
 
 ### 🐛 „Dostupno ažuriranje" bez dugmeta za ažuriranje (`ModuleDiscoveryService`)

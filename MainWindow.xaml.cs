@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Threading;
@@ -76,6 +77,10 @@ public partial class MainWindow : Window
         RefreshModules();
     }
 
+    // Ime modula koji dobija istaknutu, veću karticu — objedinjeni ERPi sistem je "glavni"
+    // proizvod, ostala tri idu kao manje, kompaktne kartice pored njega.
+    private const string FeaturedModuleId = "ERPi";
+
     private void RefreshModules()
     {
         Modules.Clear();
@@ -84,7 +89,9 @@ public partial class MainWindow : Window
         {
             Modules.Add(m);
         }
-        ModuleItemsControl.ItemsSource = Modules;
+
+        FeaturedModuleControl.Content = Modules.FirstOrDefault(m => m.Id == FeaturedModuleId);
+        ModuleItemsControl.ItemsSource = Modules.Where(m => m.Id != FeaturedModuleId).ToList();
         TxtStatus.Text = $"Osveženi statusi modula i baza u {DateTime.Now:HH:mm:ss}";
     }
 

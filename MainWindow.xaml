@@ -155,6 +155,27 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+
+        <!-- Kompaktne varijante dugmadi za manje kartice pored istaknutog ERPi modula -->
+        <Style x:Key="CompactPrimaryButtonStyle" TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}">
+            <Setter Property="FontSize" Value="12"/>
+            <Setter Property="Padding" Value="10,7"/>
+        </Style>
+        <Style x:Key="CompactSecondaryButtonStyle" TargetType="Button" BasedOn="{StaticResource SecondaryButtonStyle}">
+            <Setter Property="FontSize" Value="13"/>
+            <Setter Property="Padding" Value="9,7"/>
+        </Style>
+        <Style x:Key="CompactUpdateButtonStyle" TargetType="Button" BasedOn="{StaticResource UpdateButtonStyle}">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="10,6"/>
+        </Style>
+        <Style x:Key="CompactInstallButtonStyle" TargetType="Button" BasedOn="{StaticResource InstallButtonStyle}">
+            <Setter Property="FontSize" Value="11"/>
+            <Setter Property="Padding" Value="10,6"/>
+        </Style>
+        <Style x:Key="CompactUninstallLinkStyle" TargetType="Button" BasedOn="{StaticResource UninstallLinkStyle}">
+            <Setter Property="FontSize" Value="10"/>
+        </Style>
     </Window.Resources>
 
     <Grid>
@@ -193,167 +214,297 @@
             </Grid>
         </Border>
 
-        <!-- MODULE CARDS GRID -->
+        <!-- MODULE CARDS: istaknuta veća kartica za ERPi levo, tri kompaktne kartice desno -->
         <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Padding="20">
-            <ItemsControl x:Name="ModuleItemsControl">
-                <ItemsControl.ItemsPanel>
-                    <ItemsPanelTemplate>
-                        <UniformGrid Columns="3"/>
-                    </ItemsPanelTemplate>
-                </ItemsControl.ItemsPanel>
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.3*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
 
-                <ItemsControl.ItemTemplate>
-                    <DataTemplate>
-                        <Border Margin="10" Background="White" CornerRadius="12" Effect="{StaticResource CardShadow}">
-                            <Grid>
-                                <Grid.RowDefinitions>
-                                    <RowDefinition Height="105"/> <!-- Card Header Banner -->
-                                    <RowDefinition Height="*"/>   <!-- Card Body Content -->
-                                    <RowDefinition Height="Auto"/> <!-- Card Footer Actions -->
-                                </Grid.RowDefinitions>
+                <!-- Istaknuta kartica objedinjenog ERPi modula -->
+                <ContentControl x:Name="FeaturedModuleControl" Grid.Column="0" VerticalAlignment="Top">
+                    <ContentControl.ContentTemplate>
+                        <DataTemplate>
+                            <Border Margin="10" Background="White" CornerRadius="12" Effect="{StaticResource CardShadow}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="130"/> <!-- Card Header Banner -->
+                                        <RowDefinition Height="*"/>   <!-- Card Body Content -->
+                                        <RowDefinition Height="Auto"/> <!-- Card Footer Actions -->
+                                    </Grid.RowDefinitions>
 
-                                <!-- Header Banner with Gradient -->
-                                <Border Grid.Row="0" CornerRadius="12,12,0,0" Padding="16">
-                                    <Border.Background>
-                                        <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
-                                            <GradientStop Color="{Binding HeaderGradientStart}" Offset="0"/>
-                                            <GradientStop Color="{Binding HeaderGradientEnd}" Offset="1"/>
-                                        </LinearGradientBrush>
-                                    </Border.Background>
+                                    <!-- Header Banner with Gradient -->
+                                    <Border Grid.Row="0" CornerRadius="12,12,0,0" Padding="20">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="{Binding HeaderGradientStart}" Offset="0"/>
+                                                <GradientStop Color="{Binding HeaderGradientEnd}" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
 
-                                    <Grid>
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="Auto"/>
-                                            <ColumnDefinition Width="*"/>
-                                        </Grid.ColumnDefinitions>
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="Auto"/>
+                                                <ColumnDefinition Width="*"/>
+                                            </Grid.ColumnDefinitions>
 
-                                        <TextBlock Text="{Binding Icon}" FontSize="40" Foreground="White" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                            <TextBlock Text="{Binding Icon}" FontSize="54" Foreground="White" VerticalAlignment="Center" Margin="0,0,16,0"/>
 
-                                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Title}" FontSize="18" FontWeight="Bold" Foreground="White" TextWrapping="Wrap"/>
-                                            <TextBlock Text="{Binding Subtitle}" FontSize="11" Foreground="#F1F5F9" TextWrapping="Wrap" Margin="0,3,0,0" Opacity="0.9"/>
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                                <TextBlock Text="{Binding Title}" FontSize="24" FontWeight="Bold" Foreground="White" TextWrapping="Wrap"/>
+                                                <TextBlock Text="{Binding Subtitle}" FontSize="13" Foreground="#F1F5F9" TextWrapping="Wrap" Margin="0,4,0,0" Opacity="0.9"/>
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+
+                                    <!-- Body Details -->
+                                    <Border Grid.Row="1" Padding="20">
+                                        <StackPanel>
+                                            <TextBlock Text="{Binding Description}" FontSize="13" Foreground="#475569" TextWrapping="Wrap" LineHeight="19"/>
+
+                                            <Separator Margin="0,12" Background="#F1F5F9"/>
+
+                                            <!-- Selektor Baze / Preduzeća za ovaj modul -->
+                                            <StackPanel Margin="0,2,0,10">
+                                                <TextBlock Text="🏢 Aktivna baza / preduzeće:" FontSize="12.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,5"/>
+                                                <ComboBox ItemsSource="{Binding Companies}" DisplayMemberPath="DisplayText"
+                                                          SelectedItem="{Binding SelectedCompany, Mode=TwoWay}"
+                                                          FontSize="13" Padding="9,6" Background="#F8FAFC"/>
+                                            </StackPanel>
+
+                                            <Grid Margin="0,5,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Status:" FontSize="13" FontWeight="SemiBold" Foreground="#64748B"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding StatusText}" FontSize="13" FontWeight="Bold" HorizontalAlignment="Right"/>
+                                            </Grid>
+
+                                            <Grid Margin="0,5,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Verzija:" FontSize="13" Foreground="#64748B"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding InstalledVersion}" FontSize="13" Foreground="#334155" HorizontalAlignment="Right"/>
+                                            </Grid>
+
+                                            <Grid Margin="0,5,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Ažurnost:" FontSize="13" Foreground="#64748B"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding UpdateStatusText}" FontSize="13" FontWeight="SemiBold" Foreground="#334155" HorizontalAlignment="Right"/>
+                                            </Grid>
+
+                                            <Grid Margin="0,5,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Registrovane baze:" FontSize="13" Foreground="#64748B"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding CompanyCountText}" FontSize="13" FontWeight="SemiBold" Foreground="#2563EB" HorizontalAlignment="Right"/>
+                                            </Grid>
+
+                                            <Grid Margin="0,5,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Zadnje pokretanje:" FontSize="13" Foreground="#64748B"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding LastLaunchedText}" FontSize="13" Foreground="#64748B" HorizontalAlignment="Right"/>
+                                            </Grid>
                                         </StackPanel>
-                                    </Grid>
-                                </Border>
+                                    </Border>
 
-                                <!-- Body Details -->
-                                <Border Grid.Row="1" Padding="16">
-                                    <StackPanel>
-                                        <TextBlock Text="{Binding Description}" FontSize="12" Foreground="#475569" TextWrapping="Wrap" Height="58" LineHeight="17"/>
+                                    <!-- Footer Action Buttons -->
+                                    <Border Grid.Row="2" Padding="20,16" Background="#F8FAFC" CornerRadius="0,0,12,12" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0">
+                                        <StackPanel>
+                                            <StackPanel Visibility="{Binding ShowUpdateArea, Converter={StaticResource BoolToVis}}" Margin="0,0,0,10">
+                                                <Button Content="{Binding UpdateButtonText}" Tag="{Binding}" Click="BtnUpdateModule_Click"
+                                                        IsEnabled="{Binding CanUpdateFromHub}"
+                                                        Style="{StaticResource UpdateButtonStyle}" HorizontalAlignment="Stretch"
+                                                        ToolTip="Preuzmi i primeni ažuriranje direktno iz ERPiHub-a"/>
+                                                <StackPanel Visibility="{Binding IsUpdating, Converter={StaticResource BoolToVis}}" Margin="0,8,0,0">
+                                                    <ProgressBar Value="{Binding UpdateProgressPercent, Mode=OneWay}" Maximum="100" Height="8"
+                                                                 IsIndeterminate="{Binding UpdateIsIndeterminate}" Foreground="#F59E0B"/>
+                                                    <TextBlock Text="{Binding UpdateProgressLabel}" FontSize="11" Foreground="#64748B"
+                                                               HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                                </StackPanel>
+                                            </StackPanel>
 
-                                        <Separator Margin="0,8" Background="#F1F5F9"/>
+                                            <!-- Instalacija — prikazuje se umesto Pokreni/Baze reda dok modul nije pronađen na disku -->
+                                            <StackPanel Visibility="{Binding IsNotInstalled, Converter={StaticResource BoolToVis}}" Margin="0,0,0,5">
+                                                <TextBlock Text="{Binding InstallStatusText}" FontSize="12.5" Foreground="#64748B"
+                                                           HorizontalAlignment="Center" Margin="0,0,0,9"/>
+                                                <Button Content="{Binding InstallButtonText}" Tag="{Binding}" Click="BtnInstallModule_Click"
+                                                        IsEnabled="{Binding CanInstallFromHub}"
+                                                        Style="{StaticResource InstallButtonStyle}" HorizontalAlignment="Stretch"
+                                                        ToolTip="Preuzmi i instaliraj modul direktno iz ERPiHub-a"/>
+                                                <StackPanel Visibility="{Binding IsInstalling, Converter={StaticResource BoolToVis}}" Margin="0,8,0,0">
+                                                    <ProgressBar Value="{Binding InstallProgressPercent, Mode=OneWay}" Maximum="100" Height="8"
+                                                                 IsIndeterminate="{Binding InstallIsIndeterminate}" Foreground="#059669"/>
+                                                    <TextBlock Text="{Binding InstallProgressLabel}" FontSize="11" Foreground="#64748B"
+                                                               HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                                </StackPanel>
+                                            </StackPanel>
 
-                                        <!-- Selektor Baze / Preduzeća za ovaj modul -->
-                                        <StackPanel Margin="0,2,0,8">
-                                            <TextBlock Text="🏢 Aktivna baza / preduzeće:" FontSize="11.5" FontWeight="SemiBold" Foreground="#334155" Margin="0,0,0,4"/>
+                                            <Grid Visibility="{Binding ShowLaunchRow, Converter={StaticResource BoolToVis}}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button Content="▶ Pokreni Modul" Tag="{Binding}" Click="BtnLaunchModule_Click"
+                                                        IsEnabled="{Binding CanLaunch}"
+                                                        Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Stretch" Margin="0,0,9,0"/>
+                                                <Button Grid.Column="1" Content="📂" Tag="{Binding BazeFolderPath}" Click="BtnOpenBazeFolder_Click"
+                                                        Style="{StaticResource SecondaryButtonStyle}" ToolTip="Otvori folder sa bazama podataka na disku"/>
+                                            </Grid>
+
+                                            <Button Content="{Binding UninstallButtonText}" Tag="{Binding}" Click="BtnUninstallModule_Click"
+                                                    Visibility="{Binding HasVelopackInstall, Converter={StaticResource BoolToVis}}"
+                                                    IsEnabled="{Binding CanUninstall}"
+                                                    Style="{StaticResource UninstallLinkStyle}" HorizontalAlignment="Stretch" Margin="0,5,0,0"
+                                                    ToolTip="Ukloni modul sa računara (baze podataka ostaju sačuvane)"/>
+                                        </StackPanel>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ContentControl.ContentTemplate>
+                </ContentControl>
+
+                <!-- Tri kompaktne kartice za preostale module -->
+                <ItemsControl x:Name="ModuleItemsControl" Grid.Column="1" VerticalAlignment="Top">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="1"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="10,10,10,0" Background="White" CornerRadius="10" Effect="{StaticResource CardShadow}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="60"/>   <!-- Card Header Banner -->
+                                        <RowDefinition Height="*"/>    <!-- Card Body Content -->
+                                        <RowDefinition Height="Auto"/> <!-- Card Footer Actions -->
+                                    </Grid.RowDefinitions>
+
+                                    <!-- Header Banner with Gradient -->
+                                    <Border Grid.Row="0" CornerRadius="10,10,0,0" Padding="10,8">
+                                        <Border.Background>
+                                            <LinearGradientBrush StartPoint="0,0" EndPoint="1,1">
+                                                <GradientStop Color="{Binding HeaderGradientStart}" Offset="0"/>
+                                                <GradientStop Color="{Binding HeaderGradientEnd}" Offset="1"/>
+                                            </LinearGradientBrush>
+                                        </Border.Background>
+
+                                        <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                            <TextBlock Text="{Binding Icon}" FontSize="22" Foreground="White" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                            <TextBlock Text="{Binding Title}" FontSize="13.5" FontWeight="Bold" Foreground="White" VerticalAlignment="Center" TextWrapping="Wrap"/>
+                                        </StackPanel>
+                                    </Border>
+
+                                    <!-- Body Details -->
+                                    <Border Grid.Row="1" Padding="10,8">
+                                        <StackPanel>
+                                            <!-- Selektor Baze / Preduzeća za ovaj modul -->
                                             <ComboBox ItemsSource="{Binding Companies}" DisplayMemberPath="DisplayText"
                                                       SelectedItem="{Binding SelectedCompany, Mode=TwoWay}"
-                                                      FontSize="12" Padding="8,5" Background="#F8FAFC"/>
+                                                      FontSize="10.5" Padding="6,4" Background="#F8FAFC" Margin="0,0,0,6"
+                                                      ToolTip="Aktivna baza / preduzeće"/>
+
+                                            <Grid>
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Status:" FontSize="10.5" FontWeight="SemiBold" Foreground="#64748B"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding StatusText}" FontSize="10.5" FontWeight="Bold" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis"/>
+                                            </Grid>
+
+                                            <Grid Margin="0,3,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Ažurnost:" FontSize="10.5" Foreground="#64748B"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding UpdateStatusText}" FontSize="10.5" FontWeight="SemiBold" Foreground="#334155" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis"/>
+                                            </Grid>
+
+                                            <Grid Margin="0,3,0,0">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <TextBlock Text="Baze:" FontSize="10.5" Foreground="#64748B"/>
+                                                <TextBlock Grid.Column="1" Text="{Binding CompanyCountText}" FontSize="10.5" FontWeight="SemiBold" Foreground="#2563EB" HorizontalAlignment="Right" TextTrimming="CharacterEllipsis"/>
+                                            </Grid>
                                         </StackPanel>
+                                    </Border>
 
-                                        <Grid Margin="0,4,0,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Status:" FontSize="12" FontWeight="SemiBold" Foreground="#64748B"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding StatusText}" FontSize="12" FontWeight="Bold" HorizontalAlignment="Right"/>
-                                        </Grid>
-
-                                        <Grid Margin="0,4,0,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Verzija:" FontSize="12" Foreground="#64748B"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding InstalledVersion}" FontSize="12" Foreground="#334155" HorizontalAlignment="Right"/>
-                                        </Grid>
-
-                                        <Grid Margin="0,4,0,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Ažurnost:" FontSize="12" Foreground="#64748B"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding UpdateStatusText}" FontSize="12" FontWeight="SemiBold" Foreground="#334155" HorizontalAlignment="Right"/>
-                                        </Grid>
-
-                                        <Grid Margin="0,4,0,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Registrovane baze:" FontSize="12" Foreground="#64748B"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding CompanyCountText}" FontSize="12" FontWeight="SemiBold" Foreground="#2563EB" HorizontalAlignment="Right"/>
-                                        </Grid>
-
-                                        <Grid Margin="0,4,0,0">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="Auto"/>
-                                                <ColumnDefinition Width="*"/>
-                                            </Grid.ColumnDefinitions>
-                                            <TextBlock Text="Zadnje pokretanje:" FontSize="12" Foreground="#64748B"/>
-                                            <TextBlock Grid.Column="1" Text="{Binding LastLaunchedText}" FontSize="12" Foreground="#64748B" HorizontalAlignment="Right"/>
-                                        </Grid>
-                                    </StackPanel>
-                                </Border>
-
-                                <!-- Footer Action Buttons -->
-                                <Border Grid.Row="2" Padding="16,12" Background="#F8FAFC" CornerRadius="0,0,12,12" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0">
-                                    <StackPanel>
-                                        <StackPanel Visibility="{Binding ShowUpdateArea, Converter={StaticResource BoolToVis}}" Margin="0,0,0,8">
-                                            <Button Content="{Binding UpdateButtonText}" Tag="{Binding}" Click="BtnUpdateModule_Click"
-                                                    IsEnabled="{Binding CanUpdateFromHub}"
-                                                    Style="{StaticResource UpdateButtonStyle}" HorizontalAlignment="Stretch"
-                                                    ToolTip="Preuzmi i primeni ažuriranje direktno iz ERPiHub-a"/>
-                                            <StackPanel Visibility="{Binding IsUpdating, Converter={StaticResource BoolToVis}}" Margin="0,7,0,0">
-                                                <ProgressBar Value="{Binding UpdateProgressPercent, Mode=OneWay}" Maximum="100" Height="7"
-                                                             IsIndeterminate="{Binding UpdateIsIndeterminate}" Foreground="#F59E0B"/>
-                                                <TextBlock Text="{Binding UpdateProgressLabel}" FontSize="10.5" Foreground="#64748B"
-                                                           HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                    <!-- Footer Action Buttons -->
+                                    <Border Grid.Row="2" Padding="10,9" Background="#F8FAFC" CornerRadius="0,0,10,10" BorderBrush="#E2E8F0" BorderThickness="0,1,0,0">
+                                        <StackPanel>
+                                            <StackPanel Visibility="{Binding ShowUpdateArea, Converter={StaticResource BoolToVis}}" Margin="0,0,0,6">
+                                                <Button Content="{Binding UpdateButtonText}" Tag="{Binding}" Click="BtnUpdateModule_Click"
+                                                        IsEnabled="{Binding CanUpdateFromHub}"
+                                                        Style="{StaticResource CompactUpdateButtonStyle}" HorizontalAlignment="Stretch"
+                                                        ToolTip="Preuzmi i primeni ažuriranje direktno iz ERPiHub-a"/>
+                                                <StackPanel Visibility="{Binding IsUpdating, Converter={StaticResource BoolToVis}}" Margin="0,6,0,0">
+                                                    <ProgressBar Value="{Binding UpdateProgressPercent, Mode=OneWay}" Maximum="100" Height="6"
+                                                                 IsIndeterminate="{Binding UpdateIsIndeterminate}" Foreground="#F59E0B"/>
+                                                    <TextBlock Text="{Binding UpdateProgressLabel}" FontSize="9.5" Foreground="#64748B"
+                                                               HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                                </StackPanel>
                                             </StackPanel>
-                                        </StackPanel>
 
-                                        <!-- Instalacija — prikazuje se umesto Pokreni/Baze reda dok modul nije pronađen na disku -->
-                                        <StackPanel Visibility="{Binding IsNotInstalled, Converter={StaticResource BoolToVis}}" Margin="0,0,0,4">
-                                            <TextBlock Text="{Binding InstallStatusText}" FontSize="11.5" Foreground="#64748B"
-                                                       HorizontalAlignment="Center" Margin="0,0,0,8"/>
-                                            <Button Content="{Binding InstallButtonText}" Tag="{Binding}" Click="BtnInstallModule_Click"
-                                                    IsEnabled="{Binding CanInstallFromHub}"
-                                                    Style="{StaticResource InstallButtonStyle}" HorizontalAlignment="Stretch"
-                                                    ToolTip="Preuzmi i instaliraj modul direktno iz ERPiHub-a"/>
-                                            <StackPanel Visibility="{Binding IsInstalling, Converter={StaticResource BoolToVis}}" Margin="0,7,0,0">
-                                                <ProgressBar Value="{Binding InstallProgressPercent, Mode=OneWay}" Maximum="100" Height="7"
-                                                             IsIndeterminate="{Binding InstallIsIndeterminate}" Foreground="#059669"/>
-                                                <TextBlock Text="{Binding InstallProgressLabel}" FontSize="10.5" Foreground="#64748B"
-                                                           HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                                            <!-- Instalacija — prikazuje se umesto Pokreni/Baze reda dok modul nije pronađen na disku -->
+                                            <StackPanel Visibility="{Binding IsNotInstalled, Converter={StaticResource BoolToVis}}" Margin="0,0,0,4">
+                                                <TextBlock Text="{Binding InstallStatusText}" FontSize="10" Foreground="#64748B"
+                                                           HorizontalAlignment="Center" Margin="0,0,0,6" TextWrapping="Wrap" TextAlignment="Center"/>
+                                                <Button Content="{Binding InstallButtonText}" Tag="{Binding}" Click="BtnInstallModule_Click"
+                                                        IsEnabled="{Binding CanInstallFromHub}"
+                                                        Style="{StaticResource CompactInstallButtonStyle}" HorizontalAlignment="Stretch"
+                                                        ToolTip="Preuzmi i instaliraj modul direktno iz ERPiHub-a"/>
+                                                <StackPanel Visibility="{Binding IsInstalling, Converter={StaticResource BoolToVis}}" Margin="0,6,0,0">
+                                                    <ProgressBar Value="{Binding InstallProgressPercent, Mode=OneWay}" Maximum="100" Height="6"
+                                                                 IsIndeterminate="{Binding InstallIsIndeterminate}" Foreground="#059669"/>
+                                                    <TextBlock Text="{Binding InstallProgressLabel}" FontSize="9.5" Foreground="#64748B"
+                                                               HorizontalAlignment="Center" Margin="0,3,0,0"/>
+                                                </StackPanel>
                                             </StackPanel>
+
+                                            <Grid Visibility="{Binding ShowLaunchRow, Converter={StaticResource BoolToVis}}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Button Content="▶ Pokreni" Tag="{Binding}" Click="BtnLaunchModule_Click"
+                                                        IsEnabled="{Binding CanLaunch}"
+                                                        Style="{StaticResource CompactPrimaryButtonStyle}" HorizontalAlignment="Stretch" Margin="0,0,6,0"/>
+                                                <Button Grid.Column="1" Content="📂" Tag="{Binding BazeFolderPath}" Click="BtnOpenBazeFolder_Click"
+                                                        Style="{StaticResource CompactSecondaryButtonStyle}" ToolTip="Otvori folder sa bazama podataka na disku"/>
+                                            </Grid>
+
+                                            <Button Content="🗑" Tag="{Binding}" Click="BtnUninstallModule_Click"
+                                                    Visibility="{Binding HasVelopackInstall, Converter={StaticResource BoolToVis}}"
+                                                    IsEnabled="{Binding CanUninstall}"
+                                                    Style="{StaticResource CompactUninstallLinkStyle}" HorizontalAlignment="Stretch" Margin="0,4,0,0"
+                                                    ToolTip="{Binding UninstallButtonText}"/>
                                         </StackPanel>
-
-                                        <Grid Visibility="{Binding ShowLaunchRow, Converter={StaticResource BoolToVis}}">
-                                            <Grid.ColumnDefinitions>
-                                                <ColumnDefinition Width="*"/>
-                                                <ColumnDefinition Width="Auto"/>
-                                            </Grid.ColumnDefinitions>
-                                            <Button Content="▶ Pokreni Modul" Tag="{Binding}" Click="BtnLaunchModule_Click"
-                                                    IsEnabled="{Binding CanLaunch}"
-                                                    Style="{StaticResource PrimaryButtonStyle}" HorizontalAlignment="Stretch" Margin="0,0,8,0"/>
-                                            <Button Grid.Column="1" Content="📂 Baze" Tag="{Binding BazeFolderPath}" Click="BtnOpenBazeFolder_Click"
-                                                    Style="{StaticResource SecondaryButtonStyle}" ToolTip="Otvori folder sa bazama podataka na disku"/>
-                                        </Grid>
-
-                                        <Button Content="{Binding UninstallButtonText}" Tag="{Binding}" Click="BtnUninstallModule_Click"
-                                                Visibility="{Binding HasVelopackInstall, Converter={StaticResource BoolToVis}}"
-                                                IsEnabled="{Binding CanUninstall}"
-                                                Style="{StaticResource UninstallLinkStyle}" HorizontalAlignment="Stretch" Margin="0,4,0,0"
-                                                ToolTip="Ukloni modul sa računara (baze podataka ostaju sačuvane)"/>
-                                    </StackPanel>
-                                </Border>
-                            </Grid>
-                        </Border>
-                    </DataTemplate>
-                </ItemsControl.ItemTemplate>
-            </ItemsControl>
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
         </ScrollViewer>
 
         <!-- STATUS FOOTER -->

@@ -3,6 +3,13 @@
 Sve značajne promene i nova izdanja projekta **ERPiHub** biće dokumentovane u ovom fajlu.
 Format je zasnovan na [Keep a Changelog](https://keepachangelog.com/en/1.0.0/) standardu.
 
+## [1.1.7] - 2026-08-07
+
+### 🎨 Sve četiri kartice u jednom redu
+- Raspored kartica modula prešao je sa dvokolonskog (istaknuta ERPi kartica levo + tri kompaktne slagane vertikalno desno) na jedan horizontalni red bez `Grid` kolona: spoljni kontejner je sada `StackPanel Orientation="Horizontal"`, a `ModuleItemsControl` koristi horizontalni `StackPanel` kao `ItemsPanel` umesto ranijeg `UniformGrid`. Sve četiri kartice (ERPi + Finansije + Zarade + Sredstva) sad stoje jedna pored druge.
+- ERPi kartica je proširena (`Width` 300→400) i visinski sažeta (manji header baner, manji paddinzi i razmaci između redova detalja), da bolje stoji pored kompaktnih kartica u istom redu.
+- `ScrollViewer` oko reda kartica vraćen na `HorizontalScrollBarVisibility="Auto"` — sad su širine kartica fiksne u pikselima (ne proporcionalne `*` kolone), pa horizontalni skrol radi ispravno kao rezerva na uskim prozorima.
+
 ## [1.1.6] - 2026-08-06
 
 ### 🎨 Istaknuta veća kartica za ERPi, tri kompaktne pored nje
